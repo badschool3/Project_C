@@ -11,10 +11,10 @@
 #define NULL '\0'		// 표준 위해 재정의
 
 void clearBuffer();		// 버퍼 정리
-int menu();				// 메뉴
+int menu();			// 메뉴
 int getch();
-void spacePractice();	// 자리 연습
-void wordPractice();	// 단어 연습
+void spacePractice();		// 자리 연습
+void wordPractice();		// 단어 연습
 void shortScript();		// 짧은글 연습
 void longScript();		// 긴글 연습
 int abs(int);			// 절대값
@@ -98,7 +98,7 @@ void spacePractice()
 	char input;
 	wrong = prog = insert = acc = 0;
 
-	while (prog <= 20)
+	while (prog < 20)
 	{
 		srand(time(NULL));
 		word = (rand() % 58) + 65;
@@ -154,7 +154,7 @@ void wordPractice()
 
 	wrong = prog = insert = acc = myWord = 0;
 
-	while (prog <= 20)
+	while (prog < 20)
 	{
 		srand(time(NULL));
 		myWord = (rand() % 20);
@@ -246,13 +246,13 @@ void shortScript()
 			inputScript[nCol] = getch();
 			
 			gettimeofday(&end, NULL);
-			if (inputScript[nCol] == 8 && nCol > 0)
+			if ((inputScript[nCol] == 8 || inputScript[nCol] == 127) && nCol > 0)
 			{
 				inputScript[nCol] = NULL;
 				inputScript[nCol-1] = NULL;
 				nCol--;
 			}
-			else if (inputScript[nCol] == 8 && nCol == 0)
+			else if ((inputScript[nCol] == 8 || inputScript[nCol] == 127) && nCol == 0)
 				inputScript[nCol] = NULL;
 			else if (inputScript[nCol] == 27 || inputScript[nCol] == 10)
 				break;
@@ -385,13 +385,13 @@ void longScript()
 			gettimeofday(&errorS, NULL);
 			system("clear");
 			wrong = 0;
-			blankSpace = strlen(lScript[randL][nRow]) - strlen(inputScript[nRow]);	// 입력값에서 빈공간 계산
+			blankSpace = strlen(lScript[randL][nRow]) - strlen(inputScript[nRow]);
 			for(i = 0; i <= nRow; i++)
 			{
 				for(j = 0; j < strlen(lScript[randL][i]); j++)
 					if((lScript[randL][i][j] != inputScript[i][j]))
 						wrong++;
-				if(i == 0)					// 만약 문자를 다 입력하지 않고 엔터를 눌렀을 시, 입력안한 글자만큼 틀린개수를 더한다
+				if(i == 0)
 					wrong -= blankSpace;
 			}
 			if(insert == 0)
@@ -402,7 +402,7 @@ void longScript()
 			printf(">> 영문 타자 연습 프로그램 : 긴 글 연습 <<\n");
 			printf(">> [ESC]를 누르면 메뉴로 돌아갑니다. <<\n");
 			printf("정확도 : %.0lf%%		현재타수 : %d\n", acc, nTasu);
-			if(nRow < 5)					// 첫 번째 페이지
+			if(nRow < 5)
 			{
 				for(i = 0; i < 5; i++)
 					puts(lScript[randL][i]);
@@ -412,7 +412,7 @@ void longScript()
 					puts(inputScript[i]);
 				fputs(inputScript[nRow], stdout);
 			}
-			else 							// 두 번째 페이지
+			else
 			{
 				for(i = 5; i < 10; i++)
 					puts(lScript[randL][i]);
@@ -428,27 +428,29 @@ void longScript()
 			
 			eTime = (errorE.tv_sec + errorE.tv_usec / 1000000.0) - (errorS.tv_sec + errorS.tv_usec / 1000000.0);
 			cTime = (end.tv_sec + end.tv_usec / 1000000.0) - (start.tv_sec + start.tv_usec / 1000000.0);
-			cTime -= eTime;			// 반복문 연산되는 시간을 빼주어 오차를 최소화
+			cTime -= eTime;
 
-			nTasu = ((insert - wrong) / cTime) * 60;		// 타수 계산
+			nTasu = ((insert - wrong) / cTime) * 60;
 
-			if (inputScript[nRow][nCol] == 8 && nCol > 0)	// 백스페이스
+			if ((inputScript[nRow][nCol] == 8 || inputScript[nCol] == 127) && nCol > 0)
 			{
 				inputScript[nRow][nCol] = NULL;
 				inputScript[nRow][nCol-1] = NULL;
 				nCol--;
 				insert--;
 			}
-			else if (inputScript[nRow][nCol] == 8 && nCol == 0)	// 백스페이스면서 행에서 지울 글자가 없을 때
+			else if ((inputScript[nRow][nCol] == 8 || inputScript[nCol] == 127) && (nCol == 0 && nRow != 0))
 				inputScript[nRow][nCol] = NULL;
-			else if (inputScript[nRow][nCol] == 27)				// ESC 입력
+			else if ((inputScript[nRow][nCol] == 8 || inputScript[nCol] == 127) && (nCol == 0 && nRow == 0))
+				inputScript[nRow][nCol] = NULL;
+			else if (inputScript[nRow][nCol] == 27)
 			{
 				printf("\n=====================\n");
 				printf("[ESC]를 누르셨습니다. 아무키나 누르시면 메뉴로 돌아갑니다.");
 				getch();
 				return;
 			}
-			else if (inputScript[nRow][nCol] == 10 || strlen(lScript[randL][nRow]) < strlen(inputScript[nRow]))	// 엔터를 입력했거나, 문자열을 초과했을 때(버퍼오버플로우 방지)
+			else if (inputScript[nRow][nCol] == 10 || strlen(lScript[randL][nRow]) < strlen(inputScript[nRow]))
 			{
 				inputScript[nRow][nCol] = NULL;
 				insert += blankSpace;
