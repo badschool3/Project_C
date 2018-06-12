@@ -8,16 +8,15 @@
 
 #define TRUE 1
 #define FALSE 0
-#define NULL '\0'		// 표준 위해 재정의
 
-void clearBuffer();		// 버퍼 정리
-int menu();			// 메뉴
+void clearBuffer();			// 버퍼 정리
+int menu();					// 메뉴
 int getch();
 void spacePractice();		// 자리 연습
 void wordPractice();		// 단어 연습
-void shortScript();		// 짧은글 연습
-void longScript();		// 긴글 연습
-int abs(int);			// 절대값
+void shortScript();			// 짧은글 연습
+void longScript();			// 긴글 연습
+int abs(int);				// 절댓값
 
 int main(void)
 {
@@ -150,7 +149,7 @@ void wordPractice()
 	int prog, wrong, acc, insert;
 	short myWord;
 	char *word[] = { "hello", "hi", "help", "apple", "school", "university", "program", "drink", "do", "like", "mean", "word", "hair", "close", "clear", "Buffer", "note", "book", "speak", "listen"};
-	char input[20] = { NULL };
+	char input[20] = { '\0' };
 
 	wrong = prog = insert = acc = myWord = 0;
 
@@ -164,6 +163,7 @@ void wordPractice()
 				acc = 100 - (100 * wrong / insert);		// 정확도 계산
 			system("clear");
 			printf(">> 영문 타자 연습 프로그램 : 낱말 연습 <<\n");
+			printf(">> [###]를 입력하시면 메뉴로 돌아갑니다. <<\n");
 			printf("진행도 : %d%%	오타수 : %d		정확도 : %d%%\n\n", (prog * 100 / 20), wrong, acc);
 			puts(word[myWord]);
 			fgets(input, sizeof(input), stdin);			// 버퍼오버플로우를 방지하기 위해 fgets 사용
@@ -214,7 +214,7 @@ void shortScript()
 		"I like I.", "I like J.", "I like K.", "I like L.", "I like M.", "I like N.", "I like O.", "I like P.", "I like Q.",
 		"I like R.", "I like S.", "I like T.", "I like U.", "I like V.", "I like W.", "I like X.", "I like Y.", "I like Z.",
 		"I like a.", "I like b.", "I like c.", "I like d." };
-	char inputScript[30] = { NULL };
+	char inputScript[30] = { '\0' };
 	int prog, nTasu, MTasu, acc, wrong, nCol, cntTasu, i;
 	double cTime, eTime;
 	short randS;
@@ -229,7 +229,7 @@ void shortScript()
 		randS = (rand() % 30);
 
 		for(i = 0; i < 30; i++)
-			inputScript[i] = NULL;
+			inputScript[i] = '\0';
 
 		gettimeofday(&start, NULL);
 		while (nCol < 30)
@@ -248,12 +248,12 @@ void shortScript()
 			gettimeofday(&end, NULL);
 			if ((inputScript[nCol] == 8 || inputScript[nCol] == 127) && nCol > 0)
 			{
-				inputScript[nCol] = NULL;
-				inputScript[nCol-1] = NULL;
+				inputScript[nCol] = '\0';
+				inputScript[nCol-1] = '\0';
 				nCol--;
 			}
 			else if ((inputScript[nCol] == 8 || inputScript[nCol] == 127) && nCol == 0)
-				inputScript[nCol] = NULL;
+				inputScript[nCol] = '\0';
 			else if (inputScript[nCol] == 27 || inputScript[nCol] == 10)
 				break;
 			else if (nCol >= 0)
@@ -289,7 +289,7 @@ void shortScript()
 		}
 
 		for (i = 0; i <= nCol; i++)
-			inputScript[i] = NULL;
+			inputScript[i] = '\0';
 		prog++;
 	}
 	printf("\n=====================\n");
@@ -368,13 +368,13 @@ void longScript()
 		}
 	};
 
-	char inputScript[10][100] = {NULL};
+	char inputScript[10][100] = {'\0'};
 	int nTasu, nCol, nRow, i, j;
 	double cTime, eTime, acc, insert, wrong;
 	short randL;
 	int blankSpace;
 	struct timeval start, end, errorS, errorE;
-	nTasu = acc = wrong = nRow = nCol = insert = 0;
+	nTasu = acc = wrong = nRow = nCol = insert = cTime = eTime = 0;
 	srand(time(NULL));
 	randL = (rand() % 4);
 	gettimeofday(&start, NULL);
@@ -401,7 +401,8 @@ void longScript()
 
 			printf(">> 영문 타자 연습 프로그램 : 긴 글 연습 <<\n");
 			printf(">> [ESC]를 누르면 메뉴로 돌아갑니다. <<\n");
-			printf("정확도 : %.0lf%%		현재타수 : %d\n", acc, nTasu);
+			printf("정확도 : %.0lf%%		현재타수 : %d\n\n", acc, nTasu);
+			printf("cTime : %d insert : %d wrong : %d\n\n",cTime,insert,wrong);
 			if(nRow < 5)
 			{
 				for(i = 0; i < 5; i++)
@@ -426,23 +427,19 @@ void longScript()
 			gettimeofday(&errorE, NULL);
 			gettimeofday(&end, NULL);
 			
-			eTime = (errorE.tv_sec + errorE.tv_usec / 1000000.0) - (errorS.tv_sec + errorS.tv_usec / 1000000.0);
-			cTime = (end.tv_sec + end.tv_usec / 1000000.0) - (start.tv_sec + start.tv_usec / 1000000.0);
-			cTime -= eTime;
+			
 
-			nTasu = ((insert - wrong) / cTime) * 60;
-
-			if ((inputScript[nRow][nCol] == 8 || inputScript[nCol] == 127) && nCol > 0)
+			if ((inputScript[nRow][nCol] == 8 || inputScript[nRow][nCol] == 127) && nCol > 0)
 			{
-				inputScript[nRow][nCol] = NULL;
-				inputScript[nRow][nCol-1] = NULL;
+				inputScript[nRow][nCol] = '\0';
+				inputScript[nRow][nCol-1] = '\0';
 				nCol--;
 				insert--;
 			}
-			else if ((inputScript[nRow][nCol] == 8 || inputScript[nCol] == 127) && (nCol == 0 && nRow != 0))
-				inputScript[nRow][nCol] = NULL;
-			else if ((inputScript[nRow][nCol] == 8 || inputScript[nCol] == 127) && (nCol == 0 && nRow == 0))
-				inputScript[nRow][nCol] = NULL;
+			else if ((inputScript[nRow][nCol] == 8 || inputScript[nRow][nCol] == 127) && (nCol == 0 && nRow != 0))
+				inputScript[nRow][nCol] = '\0';
+			else if ((inputScript[nRow][nCol] == 8 || inputScript[nRow][nCol]== 127) && (nCol == 0 && nRow == 0))
+				inputScript[nRow][nCol] = '\0';
 			else if (inputScript[nRow][nCol] == 27)
 			{
 				printf("\n=====================\n");
@@ -452,7 +449,7 @@ void longScript()
 			}
 			else if (inputScript[nRow][nCol] == 10 || strlen(lScript[randL][nRow]) < strlen(inputScript[nRow]))
 			{
-				inputScript[nRow][nCol] = NULL;
+				inputScript[nRow][nCol] = '\0';
 				insert += blankSpace;
 				nRow++;
 				nCol = 0;
@@ -463,6 +460,11 @@ void longScript()
 				nCol++;
 				insert++;
 			}
+			eTime = (errorE.tv_sec + errorE.tv_usec / 1000000.0) - (errorS.tv_sec + errorS.tv_usec / 1000000.0);
+			cTime = (end.tv_sec + end.tv_usec / 1000000.0) - (start.tv_sec + start.tv_usec / 1000000.0);
+			cTime -= eTime;
+
+			nTasu = ((insert - wrong) / cTime) * 60;
 		}
 	}
 	printf("\n=====================\n");
