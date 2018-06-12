@@ -369,8 +369,8 @@ void longScript()
 	};
 
 	char inputScript[10][100] = {'\0'};
-	int nTasu, nCol, nRow, i, j;
-	double cTime, eTime, acc, insert, wrong;
+	int nCol, nRow, i, j;
+	double cTime, eTime, acc, insert, wrong, nTasu;
 	short randL;
 	int blankSpace;
 	struct timeval start, end, errorS, errorE;
@@ -395,14 +395,17 @@ void longScript()
 					wrong -= blankSpace;
 			}
 			if(insert == 0)
-				acc = 0;
+			{
+				acc = nTasu = 0;
+			}
 			else
-				acc = 100.0 - (100.0 * wrong / insert);
-
+			{
+				acc = 100.0 - ((100.0 * wrong) / insert);
+				nTasu = ((insert - wrong) / cTime) * 60;
+			}		
 			printf(">> 영문 타자 연습 프로그램 : 긴 글 연습 <<\n");
 			printf(">> [ESC]를 누르면 메뉴로 돌아갑니다. <<\n");
-			printf("정확도 : %.0lf%%		현재타수 : %d\n\n", acc, nTasu);
-			printf("cTime : %d insert : %d wrong : %d\n\n",cTime,insert,wrong);
+			printf("정확도 : %.0lf%%		현재타수 : %.0lf\n\n", acc, nTasu);
 			if(nRow < 5)
 			{
 				for(i = 0; i < 5; i++)
@@ -423,11 +426,12 @@ void longScript()
 					puts(inputScript[i]);
 				fputs(inputScript[nRow], stdout);
 			}
-			inputScript[nRow][nCol] = getch();
 			gettimeofday(&errorE, NULL);
+			inputScript[nRow][nCol] = getch();
 			gettimeofday(&end, NULL);
-			
-			
+			eTime = (double)(errorE.tv_sec) + ((double)(errorE.tv_usec) / 1000000.0) - (double)(errorS.tv_sec) + (double)(errorS.tv_usec) / 1000000.0;
+			cTime = (double)(end.tv_sec) + ((double)(end.tv_usec) / 1000000.0) - (double)(start.tv_sec) + (double)(start.tv_usec) / 1000000.0;
+			cTime -= eTime;
 
 			if ((inputScript[nRow][nCol] == 8 || inputScript[nRow][nCol] == 127) && nCol > 0)
 			{
@@ -436,9 +440,7 @@ void longScript()
 				nCol--;
 				insert--;
 			}
-			else if ((inputScript[nRow][nCol] == 8 || inputScript[nRow][nCol] == 127) && (nCol == 0 && nRow != 0))
-				inputScript[nRow][nCol] = '\0';
-			else if ((inputScript[nRow][nCol] == 8 || inputScript[nRow][nCol]== 127) && (nCol == 0 && nRow == 0))
+			else if ((inputScript[nRow][nCol] == 8 || inputScript[nRow][nCol]== 127) && nCol == 0)
 				inputScript[nRow][nCol] = '\0';
 			else if (inputScript[nRow][nCol] == 27)
 			{
@@ -460,11 +462,7 @@ void longScript()
 				nCol++;
 				insert++;
 			}
-			eTime = (errorE.tv_sec + errorE.tv_usec / 1000000.0) - (errorS.tv_sec + errorS.tv_usec / 1000000.0);
-			cTime = (end.tv_sec + end.tv_usec / 1000000.0) - (start.tv_sec + start.tv_usec / 1000000.0);
-			cTime -= eTime;
-
-			nTasu = ((insert - wrong) / cTime) * 60;
+			
 		}
 	}
 	printf("\n=====================\n");
