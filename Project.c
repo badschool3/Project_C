@@ -8,6 +8,9 @@
 
 #define TRUE 1
 #define FALSE 0
+#define COLOR_YELLOW "\x1b[33m"		// 글자에 색깔 적용
+#define COLOR_RED "\x1b[31m"
+#define COLOR_RESET "\x1b[0m"		// 글자의 색깔 지우기
 
 void clearBuffer();			// 버퍼 정리
 int menu();					// 메뉴
@@ -232,14 +235,22 @@ void shortScript()
 			inputScript[i] = '\0';
 
 		gettimeofday(&start, NULL);
-		while (nCol < 30)
+		while (nCol < strlen(sScript[randS]) + 1)
 		{
 			gettimeofday(&errorS, NULL);
 			system("clear");
 			printf(">> 영문 타자 연습 프로그램 : 짧은 글 연습 <<\n");
 			printf(">> [ESC]를 누르면 메뉴로 돌아갑니다. <<\n");
 			printf("진행도 : %d%%  현재타수 : %d  최고타수 : %d  정확도 : %d%%\n\n", (prog * 100) / 5, nTasu, MTasu, acc);
-			puts(sScript[randS]);
+			for(i = 0; i < strlen(sScript[randS]); i++)	// 현재 입력하는곳 빨간색 적용
+			{
+				if(i==nCol)
+					printf(COLOR_RED"%c",sScript[randS][i]);
+				else
+					printf("%c",sScript[randS][i]);
+				printf(COLOR_RESET);
+			}
+			printf("\n");
 			fputs(inputScript, stdout);
 
 			gettimeofday(&errorE, NULL);	// 출력되는 동안의 시간을 측정
@@ -409,7 +420,22 @@ void longScript()
 			if(nRow < 5)
 			{
 				for(i = 0; i < 5; i++)
-					puts(lScript[randL][i]);
+				{
+					if(i==nRow)
+					{
+							for(j = 0; j < strlen(lScript[randL][i]); j++)
+							{
+								if(j==nCol)
+									printf(COLOR_RED"%c",lScript[randL][i][j]);		// 현재 입력하는 글자 빨간색 적용
+								else
+									printf(COLOR_YELLOW"%c",lScript[randL][i][j]);	// 현재 입력하는 줄 	노란색 적용
+								printf(COLOR_RESET);
+							}
+							printf("\n");
+					}
+					else
+						puts(lScript[randL][i]);
+				}
 				printf("\n");
 
 				for(i = 0; i < nRow; i++)
@@ -419,7 +445,22 @@ void longScript()
 			else
 			{
 				for(i = 5; i < 10; i++)
-					puts(lScript[randL][i]);
+				{
+					if(i==nRow)
+					{
+							for(j = 0; j < strlen(lScript[randL][i]); j++)
+							{
+								if(j==nCol)
+									printf(COLOR_RED"%c",lScript[randL][i][j]);		// 현재 입력하는 글자 빨간색 적용
+								else
+									printf(COLOR_YELLOW"%c",lScript[randL][i][j]);	// 현재 입력하는 줄 	노란색 적용
+								printf(COLOR_RESET);
+							}
+							printf("\n");
+					}
+					else
+						puts(lScript[randL][i]);
+				}
 				printf("\n");
 
 				for(i = 5; i < nRow; i++)
