@@ -128,8 +128,8 @@ void spacePractice()
 		if (input == 27)									// ESC 입력 시 종료
 		{
 			printf("\n=====================\n");
-			printf("[ESC]를 누르셨습니다. 아무키나 누르시면 메뉴로 돌아갑니다.");
-			getch();
+			printf("[ESC]를 누르셨습니다. 엔터키를 누르시면 메뉴로 돌아갑니다.");
+			while(getch()!=10);
 			return;
 		}
 		prog++;
@@ -137,8 +137,8 @@ void spacePractice()
 	system("clear");
 	printf("\n=====================\n");
 	printf("진행도 : %d%%	오타수 : %d		정확도 : %d%%\n", (prog * 100 / 20), wrong, acc);
-	printf("자리 연습이 끝났습니다. 아무키나 누르시면 메뉴로 돌아갑니다.");
-	getch();
+	printf("자리 연습이 끝났습니다. 엔터키를 누르시면 메뉴로 돌아갑니다.");
+	while(getch()!=10);
 }
 
 void wordPractice()
@@ -182,8 +182,7 @@ void wordPractice()
 			printf(">> [###]를 입력하시면 메뉴로 돌아갑니다. <<\n");
 			printf("진행도 : %d%%	오타수 : %d		정확도 : %d%%\n\n", (prog * 100 / 20), wrong, acc);
 			puts(word[myWord]);
-			fgets(input, sizeof(input), stdin);			// 버퍼오버플로우를 방지하기 위해 fgets 사용
-
+			fgets(input, sizeof(input) / sizeof(input[0]), stdin);			// 버퍼오버플로우를 방지하기 위해 fgets 사용
 			if (input[strlen(input) - 1] == '\n')		// fgets에서 입력받은 개행문자 제거
 				input[strlen(input) - 1] = '\0';
 			insert++;									// 입력횟수 증가
@@ -198,8 +197,8 @@ void wordPractice()
 		if (!strcmp(input, "###"))						// break로 빠져나온 후 앞서 입력받은 값이 ### 이었다면 메뉴로 돌아감
 			{
 				printf("\n=====================\n");
-				printf("[###]를 입력하셨습니다. 아무키나 누르시면 메뉴로 돌아갑니다.");
-				getch();
+				printf("[###]를 입력하셨습니다. 엔터키를 누르시면 메뉴로 돌아갑니다.");
+				while(getch()!=10);
 				return;
 			}
 		prog++;
@@ -207,8 +206,8 @@ void wordPractice()
 	system("clear");
 	printf("\n=====================\n");
 	printf("진행도 : %d%%	오타수 : %d		정확도 : %d%%\n", (prog * 100 / 20), wrong, acc);
-	printf("낱말 연습이 끝났습니다. 아무키나 누르시면 메뉴로 돌아갑니다.");
-	getch();
+	printf("낱말 연습이 끝났습니다. 엔터키를 누르시면 메뉴로 돌아갑니다.");
+	while(getch()!=10);
 }
 
 void shortScript()
@@ -311,8 +310,8 @@ void shortScript()
 		if (inputScript[nCol] == 27)			// ESC 입력 시
 		{
 			printf("\n=====================\n");
-			printf("[ESC]를 누르셨습니다. 아무키나 누르시면 메뉴로 돌아갑니다.");
-			getch();
+			printf("[ESC]를 누르셨습니다. 엔터키를 누르시면 메뉴로 돌아갑니다.");
+			while(getch()!=10);
 			return;
 		}
 
@@ -323,8 +322,8 @@ void shortScript()
 	system("clear");
 	printf("\n=====================\n");
 	printf("진행도 : %d%%  최고타수 : %d  정확도 : %d%%\n", (prog * 100) / 5, MTasu, acc);
-	printf("짧은 글 연습이 끝났습니다. 아무키나 누르시면 메뉴로 돌아갑니다.");
-	getch();
+	printf("짧은 글 연습이 끝났습니다. 엔터키를 누르시면 메뉴로 돌아갑니다.");
+	while(getch()!=10);
 }
 
 void longScript()
@@ -508,8 +507,8 @@ void longScript()
 			else if (inputScript[nRow][nCol] == 27)			// 입력한 값이 ESC 일 때 종료
 			{
 				printf("\n=====================\n");
-				printf("[ESC]를 누르셨습니다. 아무키나 누르시면 메뉴로 돌아갑니다.");
-				getch();
+				printf("[ESC]를 누르셨습니다. 엔터키를 누르시면 메뉴로 돌아갑니다.");
+				while(getch()!=10);
 				return;
 			}
 			else if (inputScript[nRow][nCol] == 10 || strlen(lScript[randL][nRow]) < strlen(inputScript[nRow]))
@@ -531,6 +530,6 @@ void longScript()
 	system("clear");
 	printf("\n=====================\n");
 	printf("정확도 : %.0lf%%		최종타수 : %.0lf\n", acc, nTasu);
-	printf("긴 글 연습이 끝났습니다. 아무키나 누르시면 메뉴로 돌아갑니다.");
-	getch();
+	printf("긴 글 연습이 끝났습니다. 엔터키를 누르시면 메뉴로 돌아갑니다.");
+	while(getch()!=10);
 }
