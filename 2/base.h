@@ -16,6 +16,9 @@ void now_logout(void);		// 로그아웃 함수
 void loadMember(void);		// 멤버파일 불러오기
 void loadBook(void);		// 도서파일 불러오기
 void loadBorrow(void);		// 대여파일 불러오기
+void writeMember(void);		// 멤버파일 쓰기
+void writeBook(void);		// 도서파일 쓰기
+void writeBorrow(void);		// 대여파일 쓰기
 
 /* --------구조체정의-------*/
 typedef struct member{		// 학생구조체
@@ -24,6 +27,7 @@ typedef struct member{		// 학생구조체
 	char name[10];			// 이름
 	char address[20];		// 주소
 	char phoneNum[12];		// 전화번호
+	struct member *next;
 }M;
 typedef struct book{		// 도서구조체
 	int bookNum;			// 도서번호
@@ -32,13 +36,20 @@ typedef struct book{		// 도서구조체
 	unsigned long long ISBN;// ISBN
 	char bookWhere[15];		// 소장처
 	char canBorrow[10];		// 대여가능 여부
+	struct book *next;
 }B;
 typedef struct borrow{		// 대여구조체
 	int stdNum;				// 학생번호
 	int bookNum;			// 도서번호
 	time_t borrowT;			// 대여시간
 	time_t returnT;			// 반납시간
+	struct borrow *next;
 }bT;
+
+/* --------변수 정의--------*/
+M MEMBER;
+B BOOK;
+bT BORROW;
 
 /* -------함수 기능 정의------*/
 int compare(const void *a, const void *b)
@@ -54,4 +65,23 @@ int compare(const void *a, const void *b)
 	else
 		return 0;			// a와 b가 같을 때 0 반환
 
+}
+
+void loadMember(void)
+{
+	FILE *ifp;						// ifp:읽기
+	ifp = fopen("client", "r");
+	
+	if((ifp = fopen("client", "r")) == NULL )
+	{
+		fprintf(stderr, "오류 : %s 파일을 열 수 없습니다.\n", "client");
+		return;
+	}
+	else
+	{
+		while(fscanf(ifp, "%d | %s | %s | %s | %s\n", &MEMBER.stdNum, MEMBER.passwd, MEMBER.name, MEMBER.address, MEMBER.phoneNum) != EOF)
+		{
+				
+		}
+	}
 }
