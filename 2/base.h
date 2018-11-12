@@ -21,26 +21,26 @@ void search_writer(void);	// 저자명 검색 함수
 void search_all(void);		// 전체 검색 함수
 
 /* --------구조체정의-------*/
-typedef struct member{
-	int stdNum;
-	char passwd[20];
-	char name[10];
-	char address[20];
-	char phoneNum[12];
+typedef struct member{		// 학생구조체
+	int stdNum;				// 학생번호
+	char passwd[20];		// 비밀번호
+	char name[10];			// 이름
+	char address[20];		// 주소
+	char phoneNum[12];		// 전화번호
 }M;
-typedef struct book{
-	int bookNum;
-	char bookName[20];
-	char bookPub[10];
-	unsigned long long ISBN;
-	char bookWhere[15];
-	char canBorrow[10];
+typedef struct book{		// 도서구조체
+	int bookNum;			// 도서번호
+	char bookName[20];		// 도서이름
+	char bookPub[10];		// 출판사
+	unsigned long long ISBN;// ISBN
+	char bookWhere[15];		// 소장처
+	char canBorrow[10];		// 대여가능 여부
 }B;
-typedef struct borrow{
-	int stdNum;
-	int bookNum;
-	time_t borrowT;
-	time_t returnT;
+typedef struct borrow{		// 대여구조체
+	int stdNum;				// 학생번호
+	int bookNum;			// 도서번호
+	time_t borrowT;			// 대여시간
+	time_t returnT;			// 반납시간
 }bT;
 
 /* -------함수 기능 정의------*/
