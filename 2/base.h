@@ -50,13 +50,15 @@ typedef struct borrow{		// 대여구조체
 /* -------함수 기능 정의------*/
 int compare(const void *a, const void *b)
 {
-	unsigned long long num1 = *(unsigned long long *)a;
-	unsigned long long num2 = *(unsigned long long *)b;
+	unsigned long long num1 = *(unsigned long long *)a;		// void 포인터 -> ull 포인터로 변환 후 역참조
+	unsigned long long num2 = *(unsigned long long *)b;		// ''
+	
+	// 현재 오름차순, 부등호 반대 시 내림차순
 	if (num1 < num2)
-		return -1;
+		return -1;			// a가 b보다 클 때 -1 반환
 	else if (num2 > num1)
-		return 1;
+		return 1;			// b가 a보다 클 때 1 반환
 	else
-		return 0;
-}
+		return 0;			// a와 b가 같을 때 0 반환
 
+}
