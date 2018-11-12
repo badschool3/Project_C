@@ -4,6 +4,13 @@ void myborrow_list(void);	// 내 대여 목록 함수
 void change_info(void);		// 개인정보 수정 함수
 void out_member(void);		// 회원 탈퇴 함수
 
+void search_menu(void);		// 도서 검색 메뉴 함수
+void search_name(void);		// 도서명 검색 함수
+void search_pub(void);		// 출판사 검색 함수
+void search_ISBN(void);		// ISBN 검색 함수
+void search_writer(void);	// 저자명 검색 함수
+void search_all(void);		// 전체 검색 함수
+
 void member_menu()
 {
 	int input;
