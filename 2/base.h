@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <stdarg.h>     // 가변 인자 사용
 #include <string.h>
+#include <time.h>		// time 함수 사용
 /* --------define문-------- */
 
 /* --------함수정의-------- */
@@ -26,9 +27,23 @@ typedef struct member{
 	char name[10];
 	char address[20];
 	char phoneNum[12];
-
 }M;
+typedef struct book{
+	int bookNum;
+	char bookName[20];
+	char bookPub[10];
+	unsigned long long ISBN;
+	char bookWhere[15];
+	char canBorrow[10];
+}B;
+typedef struct borrow{
+	int stdNum;
+	int bookNum;
+	time_t borrowT;
+	time_t returnT;
+}bT;
 
+/* -------함수 기능 정의------*/
 int compare(const void *a, const void *b)
 {
 	unsigned long long num1 = *(unsigned long long *)a;
