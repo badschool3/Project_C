@@ -20,6 +20,10 @@ void search_ISBN(void);		// ISBN 검색 함수
 void search_writer(void);	// 저자명 검색 함수
 void search_all(void);		// 전체 검색 함수
 
+void loadMember(void);		// 멤버파일 불러오기
+void loadBook(void);		// 도서파일 불러오기
+void loadBorrow(void);		// 대여파일 불러오기
+
 /* --------구조체정의-------*/
 typedef struct member{		// 학생구조체
 	int stdNum;				// 학생번호
