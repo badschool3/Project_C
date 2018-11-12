@@ -23,17 +23,28 @@ void admin_menu()
 		switch(input)
 		{
 			case 1:
+				add_book();
 				break;
 			case 2:
+				remove_book();
 				break;
 			case 3:
+				borrow_book();
 				break;
 			case 4:
+				return_book();
 				break;
 			case 5:
+				search_book();
 				break;
-
+			case 6:
+				member_list();
+				break;
+			case 7:
+				now_logout();
+				break;
+			default:
+				printf("다시 입력해주세요.\n\n");
 		}
 	}
-	
 }

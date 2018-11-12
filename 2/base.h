@@ -31,8 +31,8 @@ typedef struct member{
 
 int compare(const void *a, const void *b)
 {
-	int num1 = *(int *)a;
-	int num2 = *(int *)b;
+	unsigned long long num1 = *(unsigned long long *)a;
+	unsigned long long num2 = *(unsigned long long *)b;
 	if (num1 < num2)
 		return -1;
 	else if (num2 > num1)
