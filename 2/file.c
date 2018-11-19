@@ -84,7 +84,7 @@ void load_file(B_LinkedList *Book_L, M_LinkedList *Member_L, bT_LinkedList *Borr
 	}
 	while(!feof(book_fp))
 	{
-		fscanf(book_fp,"%d | %s | %s | %s | %lld | %s | %s",\
+		fscanf(book_fp,"%d | %s | %s | %s | %lld | %s | %s\n",\
 				&bb.bookNum, bb.bookName, bb.bookPub, &bb.ISBN, bb.bookWhere, bb.canBorrow);
 		insertNode_Book(Book_L, bb);
 	}

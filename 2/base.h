@@ -46,7 +46,7 @@ typedef struct borrow{		// 대여구조체
 	struct borrow *next;
 }bT;
 
-typedef struct M_List{
+typedef struct M_List{		// 링크드 리스트 구현
 	M *head;
 	M *cur;
 	M *tail;
@@ -63,7 +63,6 @@ typedef struct bT_List{
 	bT *cur;
 	bT *tail;
 }bT_LinkedList;
-
 
 /* --------변수 정의--------*/
 B_LinkedList *Book_L;
