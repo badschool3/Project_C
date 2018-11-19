@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+FILE *fp;
+
 typedef struct book{		// 도서구조체
 	int bookNum;			// 도서번호
 	char bookName[20];		// 도서이름
@@ -41,15 +43,13 @@ void insertNode(linkedList *L, B b1)
 void printNodes(linkedList *newB)
 {
 	B *p = newB -> head;
-	putchar('[');
+	fp = fopen("client","w");
 	while(p != NULL)
 	{
-		printf("%d | %s | %s | %lld | %s | %s \n", p -> bookNum, p -> bookName,\
+		fprintf(fp,"%d | %s | %s | %lld | %s | %s \n", p -> bookNum, p -> bookName,\
 				p-> bookPub, p-> ISBN, p-> bookWhere, p-> canBorrow);
 		p = p->next;
 	}
-	putchar(']');
-	putchar('\n');
 }
 
 int campare(const void *a, const void *b)
@@ -71,11 +71,13 @@ int main()
 	book_L -> cur = NULL;
 	book_L -> tail = NULL;
 	B bb;
+
 	for(int i = 0 ; i < 4; i++)
 	{
 		scanf("%d | %s | %s | %lld | %s | %s",&bb.bookNum, bb.bookName, bb.bookPub, &bb.ISBN, bb.bookWhere, bb.canBorrow);
 		insertNode(book_L, bb);
 	}
 	printNodes(book_L);
+	fclose(fp);
 }
 

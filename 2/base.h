@@ -46,10 +46,30 @@ typedef struct borrow{		// 대여구조체
 	struct borrow *next;
 }bT;
 
+typedef struct M_List{
+	M *head;
+	M *cur;
+	M *tail;
+}M_LinkedList;
+
+typedef struct B_List{
+	B *head;
+	B *cur;
+	B *tail;
+}B_LinkedList;
+
+typedef struct bT_List{
+	bT *head;
+	bT *cur;
+	bT *tail;
+}bT_LinkedList;
+
+
+
 /* --------변수 정의--------*/
-M MEMBER;
-B BOOK;
-bT BORROW;
+B_LinkedList *Book_L = (B_LinkedList *)malloc(sizeof(B_LinkedList));
+M_LinkedList *Member_L = (M_LinkedList *)malloc(sizeof(M_LinkedList));
+bT_LinkedList *Borrow_L = (bT_LinkedList *)malloc(sizeof(bT_LinkedList));
 
 /* -------함수 기능 정의------*/
 int compare(const void *a, const void *b)
@@ -67,21 +87,3 @@ int compare(const void *a, const void *b)
 
 }
 
-void loadMember(void)
-{
-	FILE *ifp;						// ifp:읽기
-	ifp = fopen("client", "r");
-	
-	if((ifp = fopen("client", "r")) == NULL )
-	{
-		fprintf(stderr, "오류 : %s 파일을 열 수 없습니다.\n", "client");
-		return;
-	}
-	else
-	{
-		while(fscanf(ifp, "%d | %s | %s | %s | %s\n", &MEMBER.stdNum, MEMBER.passwd, MEMBER.name, MEMBER.address, MEMBER.phoneNum) != EOF)
-		{
-				
-		}
-	}
-}
