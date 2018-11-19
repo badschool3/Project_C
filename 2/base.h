@@ -66,9 +66,9 @@ typedef struct bT_List{
 
 
 /* --------변수 정의--------*/
-B_LinkedList *Book_L = (B_LinkedList *)malloc(sizeof(B_LinkedList));
-M_LinkedList *Member_L = (M_LinkedList *)malloc(sizeof(M_LinkedList));
-bT_LinkedList *Borrow_L = (bT_LinkedList *)malloc(sizeof(bT_LinkedList));
+B_LinkedList *Book_L;
+M_LinkedList *Member_L;
+bT_LinkedList *Borrow_L;
 
 /* -------함수 기능 정의------*/
 int compare(const void *a, const void *b)
