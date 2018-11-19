@@ -109,9 +109,25 @@ void printNodes(B_LinkedList *newB, M_LinkedList *newM, bT_LinkedList *newbT)
 	M *mp = newM -> head;
 	bT *btp = newbT -> head
 	
-	while(p != NULL)
+	while(mp != NULL)
 	{
-		printf("%d | %s | %s | %s | %s\n", p -> stdNum, p -> passwd, p -> name, p-> address, p -> phoneNum);
-		p = p -> next;
+		fprintf(client_fp, "%08d | %s | %s | %s | %s\n",\
+				mp -> stdNum, mp -> passwd, mp -> name, mp-> address, mp -> phoneNum);
+		mp = mp -> next;
 	}
+	while(bp != NULL)
+	{
+		fprintf(book_fp, "%07d | %s | %s | %s | %013lld | %s | %s\n",\
+				bp -> bookNum, bp -> booName, bp -> bookPub, bp -> ISBN, bp -> bookWhere, bp -> canBorrow);
+		bp = bp -> next;
+	}
+	while(btp != NULL)
+	{
+		fprintf(borrow_fp, "%08d | %07d | %d | %d\n",\
+				btp -> stdNum, btp -> bookNum, btp -> borrowT, btp -> returnT);
+		btp = btp -> next;
+	}
+	fclose(client_fp);
+	fclose(book_fp);
+	fclose(borrow_fp);
 }
