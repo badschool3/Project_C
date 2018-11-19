@@ -58,3 +58,12 @@ void insertNode_Borrow(bT_LinkedList *L, bT bT1)
 		L -> tail -> newbT;
 	}
 }
+
+void load_file(void)
+{
+	*client_fp, *book_fp, *borrow_fp;
+	client_fp = fopen("client","r");
+	book_fp = fopen("book","r");
+	borrow_fp = fopen("borrow","r");
+
+}

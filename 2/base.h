@@ -65,7 +65,6 @@ typedef struct bT_List{
 }bT_LinkedList;
 
 
-
 /* --------변수 정의--------*/
 B_LinkedList *Book_L = (B_LinkedList *)malloc(sizeof(B_LinkedList));
 M_LinkedList *Member_L = (M_LinkedList *)malloc(sizeof(M_LinkedList));
