@@ -86,19 +86,19 @@ void load_file()
 	{
 		fscanf(client_fp,"%d | %s | %s | %s | %s\n",\
 				&mm.stdNum, mm.passwd, mm.name, mm.address, mm.phoneNum);
-		insertNode_Client(Member_L, mm);
+		insertNode_Client(mm);
 	}
 	while(!feof(book_fp))
 	{
 		fscanf(book_fp,"%d | %s | %s | %s | %lld | %s | %s\n",\
 				&bb.bookNum, bb.bookName, bb.bookPub, &bb.ISBN, bb.bookWhere, bb.canBorrow);
-		insertNode_Book(Book_L, bb);
+		insertNode_Book(bb);
 	}
 	while(!feof(borrow_fp))
 	{
 		fscanf(borrow_fp, "%d | %d | %d | %d\n",\
 				&bt.stdNum, &bt.bookNum, &bt.borrowT, &bt.returnT);
-		insertNode_Borrow(Borrow_L, bt);
+		insertNode_Borrow(bt);
 	}
 	fclose(client_fp);
 	fclose(book_fp);
