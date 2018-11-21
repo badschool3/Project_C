@@ -6,7 +6,7 @@ bool check_member(M);			// 회원 중복 체크 함수
 
 int first_menu()
 {
-	int input;
+	int input, check;
 
 	while(1)
 	{
@@ -23,12 +23,7 @@ int first_menu()
 				join_member();
 				break;
 			case 2:
-				if(login_member()==1)
-					return 1;
-				else if(login_member()==2)
-					return 2;
-				else
-					return false;
+				return login_member();
 
 			case 3:
 				return false;
@@ -70,22 +65,27 @@ void join_member()
 
 int login_member()
 {
-	int num;
+	char num[8];
 	char password[20];
 	M *mp = Member_L -> head;
 	printf("학번 : ");
-	scanf("%d",&num);
+	scanf("%s", num);
 	printf("비밀번호 : ");
 	scanf("%s", passwd);
 	
 	while(mp != NULL)
 	{
-		if((mp -> stdNum == num) && !(strcmp(mp->passwd, password)))
-			if
+		if(!(strcmp(mp->stdNum, num)&& !(strcmp(mp->passwd, password))))
+		{
+			if(!(strcmp(num,"admin"))
+				return 2;
+			else
+				return 1;
+		}
 		mp = mp -> next;
 	}
 	printf("로그인 정보가 틀립니다.\n");
-	
+	return false;
 }
 
 bool check_member(M m1)

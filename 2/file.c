@@ -84,8 +84,8 @@ void load_file()
 
 	while(!feof(client_fp))
 	{
-		fscanf(client_fp,"%d | %s | %s | %s | %s\n",\
-				&mm.stdNum, mm.passwd, mm.name, mm.address, mm.phoneNum);
+		fscanf(client_fp,"%s | %s | %s | %s | %s\n",\
+				mm.stdNum, mm.passwd, mm.name, mm.address, mm.phoneNum);
 		insertNode_Client(mm);
 	}
 	while(!feof(book_fp))
@@ -117,7 +117,7 @@ void save_file()
 	
 	while(mp != NULL)
 	{
-		fprintf(client_fp, "%08d | %s | %s | %s | %s\n",\
+		fprintf(client_fp, "%s | %s | %s | %s | %s\n",\
 				mp -> stdNum, mp -> passwd, mp -> name, mp-> address, mp -> phoneNum);
 		mp = mp -> next;
 	}
