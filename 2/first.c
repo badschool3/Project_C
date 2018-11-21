@@ -1,11 +1,10 @@
 #include "base.h"
-void first_menu(void);			// 메뉴 출력 함수
+int first_menu(void);			// 메뉴 출력 함수
 void join_member(void);			// 회원 가입 함수
-void login_member(void);		// 로그인 함수
-void save_member(M);			// 회원 저장 함수
+int login_member(void);			// 로그인 함수
 bool check_member(M);			// 회원 중복 체크 함수
 
-void first_menu()
+int first_menu()
 {
 	int input;
 
@@ -24,10 +23,15 @@ void first_menu()
 				join_member();
 				break;
 			case 2:
-				login_member();
-				break;
+				if(login_member()==1)
+					return 1;
+				else if(login_member()==2)
+					return 2;
+				else
+					return false;
+
 			case 3:
-				return;
+				return false;
 			default:
 				printf("다시 입력해주세요.\n");
 				sleep(1);
@@ -54,15 +58,44 @@ void join_member()
 	scanf("%s",MB.phoneNum);
 	
 	if(check_member(MB))
-		save_member(MB);
+	{
+		insertNode_Member(MB);
 		printf("\n\n회원가입이 완료되셨습니다.\n");
+	}
 	else
 		printf("중복된 정보를 가진 회원이 존재합니다.\n");
 	return;
 	
 }
 
+int login_member()
+{
+	int num;
+	char password[20];
+	M *mp = Member_L -> head;
+	printf("학번 : ");
+	scanf("%d",&num);
+	printf("비밀번호 : ");
+	scanf("%s", passwd);
+	
+	while(mp != NULL)
+	{
+		if((mp -> stdNum == num) && !(strcmp(mp->passwd, password)))
+			if
+		mp = mp -> next;
+	}
+	printf("로그인 정보가 틀립니다.\n");
+	
+}
+
 bool check_member(M m1)
 {
-		
+		M *mp = Member_L -> head;
+		while(mp != NULL)
+		{
+			if(mp -> stdNum == m1.stdNum)
+				return false;
+			mp = mp -> next;
+		}
+		return true;
 }
