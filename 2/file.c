@@ -1,5 +1,11 @@
 #include "base.h"
 
+void insertNode_Book(B_LinkedList*, B);							// Book 노드 추가
+void insertNode_Member(M_LinkedList*, M);						// Member 노드 추가
+void insertNode_Borrow(bT_LinkedList*, bT);						// Borrow 노드 추가
+void load_file(B_LinkedList* , M_LinkedList*, bT_LinkedList*);	// 파일에서 정보 메모리에 불러오기
+void printNodes(B_LinkedList*, M_LinkedList*, bT_LinkedList*);	// 메모리 상에 정보 파일에 저장하기
+
 FILE *client_fp, *book_fp, *borrow_fp;	
 
 void insertNode_Book(B_LinkedList *L, B b1)
