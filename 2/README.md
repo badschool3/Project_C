@@ -8,12 +8,16 @@
 ### 도서관 서비스 프로그램 개발을 통해 동적 메모리 할당, 자기 참조 구조체, 파일 입출력 사용 능력을 배양
 ### client, book, borrow파일에 각각 정보를 저장하고 그 정보들을 동적 메모리 할당으로 불러옴
 
+## 설계도
+![asdasd](https://user-images.githubusercontent.com/39875198/48846842-65700780-ede3-11e8-80f6-47b2bdf5ff2f.PNG)
+
+
 ## 파일 구성
 ### base.h
 #### 모든 소스파일들의 기본이 되는 헤더파일
 #### include, func, define, struct 등이 정의되어 있음
 
-### project.c
+### main.c
 #### main함수가 실행되는 소스파일
 
 ### first.c
@@ -24,4 +28,8 @@
 
 ### admin.c
 #### 관리자로 로그인 했을 시 보여지는 화면
+
+### file.c
+#### 파일의 정보 불러오기, 저장 기능
+
 
