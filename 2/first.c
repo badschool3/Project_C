@@ -24,12 +24,10 @@ int first_menu()
 				break;
 			case 2:
 				return login_member();
-
 			case 3:
 				return false;
 			default:
 				printf("다시 입력해주세요.\n");
-				sleep(1);
 				break;
 		}
 	}
@@ -77,11 +75,15 @@ int login_member()
 	{
 		if(!(strcmp(mp->stdNum, num)&& !(strcmp(mp->passwd, password))))
 		{
-			if(!(strcmp(num,"admin"))
+			if(!(strcmp(num,"admin")))
 				return 2;
 			else
+			{
+				Member_L -> cur = mp;
 				return 1;
+			}
 		}
+
 		mp = mp -> next;
 	}
 	printf("로그인 정보가 틀립니다.\n");
