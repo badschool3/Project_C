@@ -1,14 +1,14 @@
 #include "base.h"
 
-void insertNode_Book(B_LinkedList*, B);							// Book 노드 추가
-void insertNode_Member(M_LinkedList*, M);						// Member 노드 추가
-void insertNode_Borrow(bT_LinkedList*, bT);						// Borrow 노드 추가
-void load_file(B_LinkedList* , M_LinkedList*, bT_LinkedList*);	// 파일에서 정보 메모리에 불러오기
-void printNodes(B_LinkedList*, M_LinkedList*, bT_LinkedList*);	// 메모리 상에 정보 파일에 저장하기
+void insertNode_Book(B);		// Book 노드 추가
+void insertNode_Member(M);		// Member 노드 추가
+void insertNode_Borrow(bT);		// Borrow 노드 추가
+void load_file(void);			// 파일에서 정보 메모리에 불러오기
+void save_file(void);			// 메모리 상에 정보 파일에 저장하기
 
 FILE *client_fp, *book_fp, *borrow_fp;	
 
-void insertNode_Book(B_LinkedList *L, B b1)
+void insertNode_Book(B b1)
 {
 	B *newB = (B *)malloc(sizeof(B));
 	newB -> bookNum = b1.bookNum;
@@ -19,16 +19,16 @@ void insertNode_Book(B_LinkedList *L, B b1)
 	memcpy(newB -> canBorrow, b1.canBorrow, sizeof(b1.canBorrow));
 	newB -> next = NULL;
 
-	if(L -> head == NULL && L -> tail == NULL)
-		L -> head = L -> tail = newB;
+	if(Book_L -> head == NULL && Book_L -> tail == NULL)
+		Book_L -> head = Book_L -> tail = newB;
 	else
 	{
-		L -> tail -> next = newB;
-		L -> tail = newB;
+		Book_L -> tail -> next = newB;
+		Book_L -> tail = newB;
 	}
 }
 
-void insertNode_Member(M_LinkedList *L, M m1)
+void insertNode_Member(M m1)
 {
 	M *newM = (M *)malloc(sizeof(M));
 	newM -> stdNum = m1.stdNum;
@@ -38,16 +38,16 @@ void insertNode_Member(M_LinkedList *L, M m1)
 	memcpy(newM->phoneNum,m1.phoneNum,sizeof(m1.phoneNum));
 	newM -> next = NULL;
 
-	if(L -> head == NULL && L -> tail == NULL)
-		L -> head = L -> tail = newM;
+	if(Member_L -> head == NULL && Member_L -> tail == NULL)
+		Member_L -> head = Member_L -> tail = newM;
 	else
 	{
-		L -> tail -> next = newM;
-		L -> tail = newM;
+		Member_L -> tail -> next = newM;
+		Member_L -> tail = newM;
 	}
 }
 
-void insertNode_Borrow(bT_LinkedList *L, bT bT1)
+void insertNode_Borrow(bT bT1)
 {
 	bT *newbT = (bT *)malloc(sizeof(bT));
 	newbT -> stdNum = bT1.stdNum;
@@ -55,16 +55,16 @@ void insertNode_Borrow(bT_LinkedList *L, bT bT1)
 	newbT -> borrowT = bT1.borrowT;
 	newbT -> returnT = bT1.returnT;
 
-	if(L -> head == NULL && L -> tail == NULL)
-		L -> head = L -> tail = newbT;
+	if(Borrow_L -> head == NULL && Borrow_L -> tail == NULL)
+		Borrow_L -> head = Borrow_L -> tail = newbT;
 	else
 	{
-		L -> tail -> next = newbT;
-		L -> tail = newbT;
+		Borrow_L -> tail -> next = newbT;
+		Borrow_L -> tail = newbT;
 	}
 }
 
-void load_file(B_LinkedList *Book_L, M_LinkedList *Member_L, bT_LinkedList *Borrow_L)
+void load_file()
 {
 	client_fp = fopen("client","r");
 	book_fp = fopen("book","r");
@@ -105,15 +105,15 @@ void load_file(B_LinkedList *Book_L, M_LinkedList *Member_L, bT_LinkedList *Borr
 	fclose(borrow_fp);
 }
 
-void printNodes(B_LinkedList *newB, M_LinkedList *newM, bT_LinkedList *newbT)
+void save_file()
 {
 	client_fp = fopen("client", "w");
 	book_fp = fopen("book", "w");
 	borrow_fp = fopen("borrow", "w");
 
-	B *bp = newB -> head;
-	M *mp = newM -> head;
-	bT *btp = newbT -> head
+	B *bp = Book_L -> head;
+	M *mp = Member_L -> head;
+	bT *btp = Borrow_L -> head
 	
 	while(mp != NULL)
 	{
