@@ -22,7 +22,7 @@ void writeBorrow(void);		// 대여파일 쓰기
 
 /* --------구조체정의-------*/
 typedef struct member{		// 학생구조체
-	int stdNum;				// 학생번호
+	char stdNum[8];			// 학생번호
 	char passwd[20];		// 비밀번호
 	char name[10];			// 이름
 	char address[20];		// 주소
