@@ -85,10 +85,16 @@ int login_member()
 		if(!(strcmp(mp->stdNum, num) && !(strcmp(mp->passwd, password))))			// 학번, 비밀번호가 일치하는지 비교
 		{
 			if(!(strcmp(num,"admin")))					// 만약 admin이라면 관리자 메뉴를 위해 2 반환
+			{
+				printf("관리자 메뉴로 진입합니다.\n아무키나 누르시면 계속합니다.\n");
+				getch();
 				return 2;
+			}
 			else
 			{
 				Member_L -> cur = mp;					// 일반 회원이라면 cur가 mp를 포인트 하고 1 반환
+				printf("%s님 환영합니다. 회원 메뉴로 진입합니다.\n아무키나 누르시면 계속합니다.\n");
+				getch();
 				return 1;
 			}
 		}
