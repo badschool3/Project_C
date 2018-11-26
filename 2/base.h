@@ -5,6 +5,7 @@
 #include <stdarg.h>     // 가변 인자 사용
 #include <string.h>
 #include <time.h>		// time 함수 사용
+#include <termio.h>		// getch() 함수 사용
 /* --------define문-------- */
 
 /* --------함수정의-------- */
@@ -85,3 +86,16 @@ int compare(const void *a, const void *b)
 
 }
 
+int getch(void){
+	int ch;
+	struct termios buf, save;
+	tcgetattr(0,&save);
+	buf = save;
+	buf.c_lflag &= ~(ICANON|ECHO);
+	buf.c_cc[VMIN] = 1;
+	buf.c_cc[VTIME] = 0;
+	tcsetattr(0, TCSAFLUSH, &buf);
+	ch = getchar();
+	tcsetattr(0, TCSAFLUSH, &save);
+	return ch;
+}
