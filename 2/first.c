@@ -11,7 +11,7 @@ int first_menu()
 	while(1)
 	{
 		system("clear");
-		input = 0;
+		input = check = 0;
 		printf(">> 도서관 서비스 <<\n");
 		printf("1. 회원가입		2. 로그인		3. 프로그램 종료\n");
 		printf("번호를 입력해주세요 : ");
@@ -23,7 +23,8 @@ int first_menu()
 				join_member();
 				break;
 			case 2:
-				return login_member();
+				check = login_member();
+				check ? return check : break;
 			case 3:
 				return false;
 			default:
@@ -73,13 +74,13 @@ int login_member()
 	
 	while(mp != NULL)
 	{
-		if(!(strcmp(mp->stdNum, num)&& !(strcmp(mp->passwd, password))))
+		if(!(strcmp(mp->stdNum, num) && !(strcmp(mp->passwd, password))))			// 학번, 비밀번호가 일치하는지 비교
 		{
-			if(!(strcmp(num,"admin")))
+			if(!(strcmp(num,"admin")))					// 만약 admin이라면 관리자 메뉴를 위해 2 반환
 				return 2;
 			else
 			{
-				Member_L -> cur = mp;
+				Member_L -> cur = mp;					// 일반 회원이라면 cur가 mp를 포인트 하고 1 반환
 				return 1;
 			}
 		}
@@ -87,7 +88,7 @@ int login_member()
 		mp = mp -> next;
 	}
 	printf("로그인 정보가 틀립니다.\n");
-	return false;
+	return false;										// 로그인 실패 시 0 반환
 }
 
 bool check_member(M m1)
