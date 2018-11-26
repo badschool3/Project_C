@@ -40,8 +40,6 @@ void member_menu()
 				break;
 			case 5:
 				now_logout();
-
 		}
-	}
-	
+	}	
 }
