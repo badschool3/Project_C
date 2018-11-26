@@ -22,7 +22,7 @@ void writeBorrow(void);		// 대여파일 쓰기
 
 /* --------구조체정의-------*/
 typedef struct member{		// 학생구조체
-	char stdNum[8];			// 학생번호
+	char stdNum[8];			// 학생번호 (정수 8자리)
 	char passwd[20];		// 비밀번호
 	char name[10];			// 이름
 	char address[20];		// 주소
@@ -30,17 +30,17 @@ typedef struct member{		// 학생구조체
 	struct member *next;
 }M;
 typedef struct book{		// 도서구조체
-	int bookNum;			// 도서번호
+	char bookNum[7];		// 도서번호 (정수 7자리)
 	char bookName[20];		// 도서이름
 	char bookPub[10];		// 출판사
-	unsigned long long ISBN;// ISBN
+	char ISBN;				// ISBN (정수 13자리)
 	char bookWhere[15];		// 소장처
 	char canBorrow[10];		// 대여가능 여부
 	struct book *next;
 }B;
 typedef struct borrow{		// 대여구조체
-	int stdNum;				// 학생번호
-	int bookNum;			// 도서번호
+	char stdNum[7];			// 학생번호 (정수 7자리)
+	char bookNum[8];		// 도서번호	(정수 8자리)
 	time_t borrowT;			// 대여시간
 	time_t returnT;			// 반납시간
 	struct borrow *next;
@@ -72,8 +72,8 @@ bT_LinkedList *Borrow_L;
 /* -------함수 기능 정의------*/
 int compare(const void *a, const void *b)
 {
-	unsigned long long num1 = *(unsigned long long *)a;		// void 포인터 -> ull 포인터로 변환 후 역참조
-	unsigned long long num2 = *(unsigned long long *)b;		// ''
+	char *num1 = *(char*)a;		// void 포인터 -> char 포인터로 변환
+	char *num2 = *(char*)b;		// ''
 	
 	// 현재 오름차순, 부등호 반대 시 내림차순
 	if (num1 < num2)
