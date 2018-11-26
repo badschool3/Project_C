@@ -71,22 +71,8 @@ M_LinkedList *Member_L;
 bT_LinkedList *Borrow_L;
 
 /* -------함수 기능 정의------*/
-int compare(const void *a, const void *b)
+int getch(void)					
 {
-	char *num1 = *(char*)a;		// void 포인터 -> char 포인터로 변환
-	char *num2 = *(char*)b;		// ''
-	
-	// 현재 오름차순, 부등호 반대 시 내림차순
-	if (num1 < num2)
-		return -1;			// a가 b보다 클 때 -1 반환
-	else if (num2 > num1)
-		return 1;			// b가 a보다 클 때 1 반환
-	else
-		return 0;			// a와 b가 같을 때 0 반환
-
-}
-
-int getch(void){
 	int ch;
 	struct termios buf, save;
 	tcgetattr(0,&save);
