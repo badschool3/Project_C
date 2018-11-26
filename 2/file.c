@@ -11,10 +11,10 @@ FILE *client_fp, *book_fp, *borrow_fp;
 void insertNode_Book(B b1)
 {
 	B *newB = (B *)malloc(sizeof(B));
-	newB -> bookNum = b1.bookNum;
-	memcpy(newB->bookName,b1.bookName,sizeof(b1.bookName));
+	memcpy(newB->bookNum, b1.bookNum, sizeof(b1.bookNum));
+	memcpy(newB->bookName,b1.bookName, sizeof(b1.bookName));
 	memcpy(newB -> bookPub, b1.bookPub, sizeof(b1.bookPub));
-	newB -> ISBN = b1.ISBN;
+	memcpy(newB -> ISBN, b1.ISBN, sizeof(b1.ISBN));
 	memcpy(newB -> bookWhere, b1.bookWhere, sizeof(b1.bookWhere));
 	memcpy(newB -> canBorrow, b1.canBorrow, sizeof(b1.canBorrow));
 	newB -> next = NULL;
