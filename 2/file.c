@@ -31,7 +31,7 @@ void insertNode_Book(B b1)
 void insertNode_Member(M m1)
 {
 	M *newM = (M *)malloc(sizeof(M));
-	newM -> stdNum = m1.stdNum;
+	memcpy(newM->stdNum, m1.stdNum, sizeof(m1.stdNum));
 	memcpy(newM->passwd,m1.passwd,sizeof(m1.passwd));
 	memcpy(newM->name,m1.name,sizeof(m1.name));
 	memcpy(newM->address,m1.address,sizeof(m1.address));
@@ -50,8 +50,8 @@ void insertNode_Member(M m1)
 void insertNode_Borrow(bT bT1)
 {
 	bT *newbT = (bT *)malloc(sizeof(bT));
-	newbT -> stdNum = bT1.stdNum;
-	newbT -> bookNum = bT1.bookNum;
+	memcpy(newbT->stdNum, bT1.stdNum, sizeof(bT1.stdNum));
+	memcpy(newbT->bookNum, bT1.bookNum, sizeof(bT1.bookNum));
 	newbT -> borrowT = bT1.borrowT;
 	newbT -> returnT = bT1.returnT;
 
@@ -90,14 +90,14 @@ void load_file()
 	}
 	while(!feof(book_fp))
 	{
-		fscanf(book_fp,"%d | %s | %s | %s | %lld | %s | %s\n",\
-				&bb.bookNum, bb.bookName, bb.bookPub, &bb.ISBN, bb.bookWhere, bb.canBorrow);
+		fscanf(book_fp,"%s | %s | %s | %s | %s | %s | %s\n",\
+				bb.bookNum, bb.bookName, bb.bookPub, bb.ISBN, bb.bookWhere, bb.canBorrow);
 		insertNode_Book(bb);
 	}
 	while(!feof(borrow_fp))
 	{
-		fscanf(borrow_fp, "%d | %d | %d | %d\n",\
-				&bt.stdNum, &bt.bookNum, &bt.borrowT, &bt.returnT);
+		fscanf(borrow_fp, "%s | %s | %d | %d\n",\
+				bt.stdNum, bt.bookNum, &bt.borrowT, &bt.returnT);
 		insertNode_Borrow(bt);
 	}
 	fclose(client_fp);
@@ -123,13 +123,13 @@ void save_file()
 	}
 	while(bp != NULL)
 	{
-		fprintf(book_fp, "%07d | %s | %s | %s | %013lld | %s | %s\n",\
+		fprintf(book_fp, "%s | %s | %s | %s | %s | %s | %s\n",\
 				bp -> bookNum, bp -> booName, bp -> bookPub, bp -> ISBN, bp -> bookWhere, bp -> canBorrow);
 		bp = bp -> next;
 	}
 	while(btp != NULL)
 	{
-		fprintf(borrow_fp, "%08d | %07d | %d | %d\n",\
+		fprintf(borrow_fp, "%s | %s | %d | %d\n",\
 				btp -> stdNum, btp -> bookNum, btp -> borrowT, btp -> returnT);
 		btp = btp -> next;
 	}
