@@ -11,6 +11,7 @@ void admin_menu()
 	int input;
 	while(1)
 	{
+		system("clear");
 		printf(">> 관리자 메뉴 <<\n");
 		printf("1. 도서 등록		2. 도서 삭제\n");
 		printf("3. 도서 대여		4. 도서 반납\n");
@@ -45,6 +46,8 @@ void admin_menu()
 				break;
 			default:
 				printf("다시 입력해주세요.\n\n");
+			printf("아무키나 입력하시면 계속합니다.\n");
+			getch();
 		}
 	}
 }
