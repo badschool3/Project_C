@@ -40,7 +40,7 @@ void join_member()
 	printf("학번, 비밀번호, 이름, 주소, 전화번호를 입력하세요.\n\n");
 	
 	printf("학번 : ");
-	scanf("%d",&MB.stdNum);
+	scanf("%d",MB.stdNum);
 	printf("비밀번호 : ");
 	scanf("%s",MB.passwd);
 	printf("이름 : ");
@@ -95,7 +95,7 @@ bool check_member(M m1)
 		M *mp = Member_L -> head;
 		while(mp != NULL)
 		{
-			if(mp -> stdNum == m1.stdNum)
+			if(!(strcmp(mp -> stdNum, m1.stdNum))
 				return false;
 			mp = mp -> next;
 		}
