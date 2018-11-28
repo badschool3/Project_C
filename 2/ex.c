@@ -46,8 +46,8 @@ typedef struct bT_List{
 }bT_LinkedList;
 
 /* --------변수 정의--------*/
-B_LinkedList *Book_L;
-M_LinkedList *Member_L;
+B_LinkedList *Book_L = NULL;
+M_LinkedList *Member_L = NULL;
 bT_LinkedList *Borrow_L;
 
 
@@ -85,6 +85,7 @@ void insertNode_Book(B b1)
 		Book_L -> tail -> next = newB;
 		Book_L -> tail = newB;
 	}
+	free(newB);
 }
 
 void insertNode_Member(M m1)
@@ -104,6 +105,7 @@ void insertNode_Member(M m1)
 		Member_L -> tail -> next = newM;
 		Member_L -> tail = newM;
 	}
+	free(newM);
 }
 
 void load_file()
@@ -120,18 +122,18 @@ void load_file()
 	Book_L -> head = Book_L -> cur = Book_L -> tail = NULL;
 	Member_L -> head = Member_L -> cur = Member_L -> tail = NULL;
 
-	while(!feof(client_fp))
-	{
-		fscanf(client_fp,"%s | %s | %s | %s | %s\n",\
+	//while(!feof(client_fp))
+	//{
+		fscanf(client_fp,"%[^\n] | %[^\n] | %[^\n] | %[^\n] | %[^\n]\n",\
 				mm.stdNum, mm.passwd, mm.name, mm.address, mm.phoneNum);
 		insertNode_Member(mm);
-	}
-	while(!feof(book_fp))
-	{
-		fscanf(book_fp,"%s | %s | %s | %s | %s | %s\n",\
+	//}
+	//while(!feof(book_fp))
+	//{
+		fscanf(book_fp,"%[^\n] | %[^\n] | %[^\n] | %[^\n] | %[^\n] | %[^\n]\n",\
 				bb.bookNum, bb.bookName, bb.bookPub, bb.ISBN, bb.bookWhere, bb.canBorrow);
 		insertNode_Book(bb);
-	}
+	//}
 	fclose(client_fp);
 	fclose(book_fp);
 }
@@ -141,18 +143,20 @@ void save_file()
 	B *bp = Book_L -> head;
 	M *mp = Member_L -> head;
 	
-	while(mp != NULL)
-	{
+	//while(mp != NULL)
+	//{
 		printf("%s | %s | %s | %s | %s\n",\
 				mp -> stdNum, mp -> passwd, mp -> name, mp-> address, mp -> phoneNum);
-		mp = mp -> next;
-	}
-	while(bp != NULL)
-	{
+	//	mp = mp -> next;
+	//}
+	//while(bp != NULL)
+	//{
 		printf("%s | %s | %s | %s | %s | %s\n",\
 				bp -> bookNum, bp -> bookName, bp -> bookPub, bp -> ISBN, bp -> bookWhere, bp -> canBorrow);
-		bp = bp -> next;
-	}
+	//	bp = bp -> next;
+	//}
 	fclose(client_fp);
 	fclose(book_fp);
+	free(Book_L);
+	free(Member_L);
 }
