@@ -46,17 +46,17 @@ typedef struct bT_List{
 }bT_LinkedList;
 
 /* --------변수 정의--------*/
-B_LinkedList *Book_L = NULL;
+B_LinkedList *Book_L;
 M_LinkedList *Member_L = NULL;
 bT_LinkedList *Borrow_L;
-
-
 
 void insertNode_Book(B);		// Book 노드 추가
 void insertNode_Member(M);		// Member 노드 추가
 void insertNode_Borrow(bT);		// Borrow 노드 추가
 void load_file(void);			// 파일에서 정보 메모리에 불러오기
 void save_file(void);			// 메모리 상에 정보 파일에 저장하기
+
+int i =0;
 
 FILE *client_fp, *book_fp, *borrow_fp;	
 
@@ -85,7 +85,6 @@ void insertNode_Book(B b1)
 		Book_L -> tail -> next = newB;
 		Book_L -> tail = newB;
 	}
-	free(newB);
 }
 
 void insertNode_Member(M m1)
@@ -97,22 +96,26 @@ void insertNode_Member(M m1)
 	memcpy(newM->address,m1.address,sizeof(m1.address));
 	memcpy(newM->phoneNum,m1.phoneNum,sizeof(m1.phoneNum));
 	newM -> next = NULL;
-
+	
 	if(Member_L -> head == NULL && Member_L -> tail == NULL)
+	{
+		printf("head초기화\n");
 		Member_L -> head = Member_L -> tail = newM;
+	}
 	else
 	{
 		Member_L -> tail -> next = newM;
 		Member_L -> tail = newM;
+		printf("tail초기화\n");
 	}
-	free(newM);
 }
 
 void load_file()
 {
 	client_fp = fopen("client","r");
 	book_fp = fopen("book","r");
-	
+	char buf[300];
+
 	B bb;
 	M mm;
 	
@@ -122,18 +125,22 @@ void load_file()
 	Book_L -> head = Book_L -> cur = Book_L -> tail = NULL;
 	Member_L -> head = Member_L -> cur = Member_L -> tail = NULL;
 
-	//while(!feof(client_fp))
-	//{
-		fscanf(client_fp,"%[^\n] | %[^\n] | %[^\n] | %[^\n] | %[^\n]\n",\
+	while(!feof(client_fp))
+	{
+		fgets(buf,sizeof(buf),client_fp);	
+		sscanf(buf, "%[^\n|] | %[^\n|] | %[^\n|] | %[^\n|] | %[^\n|]",\
 				mm.stdNum, mm.passwd, mm.name, mm.address, mm.phoneNum);
 		insertNode_Member(mm);
-	//}
-	//while(!feof(book_fp))
-	//{
-		fscanf(book_fp,"%[^\n] | %[^\n] | %[^\n] | %[^\n] | %[^\n] | %[^\n]\n",\
+	}
+	while(!feof(book_fp))
+	{
+	
+		fgets(buf,sizeof(buf),book_fp);
+		sscanf(buf,"%[^\n|] | %[^\n|] | %[^\n|] | %[^\n|] | %[^\n|] | %[^\n|]",\
 				bb.bookNum, bb.bookName, bb.bookPub, bb.ISBN, bb.bookWhere, bb.canBorrow);
 		insertNode_Book(bb);
-	//}
+	}
+	
 	fclose(client_fp);
 	fclose(book_fp);
 }
@@ -143,18 +150,18 @@ void save_file()
 	B *bp = Book_L -> head;
 	M *mp = Member_L -> head;
 	
-	//while(mp != NULL)
-	//{
-		printf("%s | %s | %s | %s | %s\n",\
+	while(mp != NULL)
+	{
+		printf("%s| %s| %s| %s| %s\n",\
 				mp -> stdNum, mp -> passwd, mp -> name, mp-> address, mp -> phoneNum);
-	//	mp = mp -> next;
-	//}
-	//while(bp != NULL)
-	//{
-		printf("%s | %s | %s | %s | %s | %s\n",\
+		mp = mp -> next;
+	}
+	while(bp != NULL)
+	{
+		printf("%s| %s| %s| %s| %s| %s\n",\
 				bp -> bookNum, bp -> bookName, bp -> bookPub, bp -> ISBN, bp -> bookWhere, bp -> canBorrow);
-	//	bp = bp -> next;
-	//}
+		bp = bp -> next;
+	}
 	fclose(client_fp);
 	fclose(book_fp);
 	free(Book_L);
