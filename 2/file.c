@@ -74,6 +74,8 @@ void load_file()
 	bT bt;
 	M mm;
 	
+	char buf[300];
+
 	Book_L = (B_LinkedList *) malloc(sizeof(B_LinkedList));
 	Member_L = (M_LinkedList *) malloc(sizeof(M_LinkedList));
 	Borrow_L = (bT_LinkedList *) malloc(sizeof(bT_LinkedList));
@@ -84,19 +86,22 @@ void load_file()
 
 	while(!feof(client_fp))
 	{
-		fscanf(client_fp,"%s | %s | %s | %s | %s\n",\
+		fgets(buf, sizeof(buf), client_fp);
+		sscanf(buf,"%[^\n|] | %[^\n|] | %[^\n|] | %[^\n|] | %[^\n|]",\
 				mm.stdNum, mm.passwd, mm.name, mm.address, mm.phoneNum);
 		insertNode_Client(mm);
 	}
 	while(!feof(book_fp))
 	{
-		fscanf(book_fp,"%s | %s | %s | %s | %s | %s | %s\n",\
+		fgets(buf, sizeof(buf), book_fp);
+		sscanf(buf,"%[^\n|] | %[^\n|] | %[^\n|] | %[^\n|] | %[^\n|] | %[^\n|]",\
 				bb.bookNum, bb.bookName, bb.bookPub, bb.ISBN, bb.bookWhere, bb.canBorrow);
 		insertNode_Book(bb);
 	}
 	while(!feof(borrow_fp))
 	{
-		fscanf(borrow_fp, "%s | %s | %d | %d\n",\
+		fgets(buf, sizeof(buf), book_fp);
+		sscanf(borrow_fp, "%[^\n|] | %[^\n|] | %d | %d\n",\
 				bt.stdNum, bt.bookNum, &bt.borrowT, &bt.returnT);
 		insertNode_Borrow(bt);
 	}
@@ -117,19 +122,19 @@ void save_file()
 	
 	while(mp != NULL)
 	{
-		fprintf(client_fp, "%s | %s | %s | %s | %s\n",\
+		fprintf(client_fp, "%s| %s| %s| %s| %s\n",\
 				mp -> stdNum, mp -> passwd, mp -> name, mp-> address, mp -> phoneNum);
 		mp = mp -> next;
 	}
 	while(bp != NULL)
 	{
-		fprintf(book_fp, "%s | %s | %s | %s | %s | %s | %s\n",\
+		fprintf(book_fp, "%s| %s| %s| %s| %s| %s| %s\n",\
 				bp -> bookNum, bp -> booName, bp -> bookPub, bp -> ISBN, bp -> bookWhere, bp -> canBorrow);
 		bp = bp -> next;
 	}
 	while(btp != NULL)
 	{
-		fprintf(borrow_fp, "%s | %s | %d | %d\n",\
+		fprintf(borrow_fp, "%s| %s| %d| %d\n",\
 				btp -> stdNum, btp -> bookNum, btp -> borrowT, btp -> returnT);
 		btp = btp -> next;
 	}
