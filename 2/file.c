@@ -128,7 +128,7 @@ void save_file()
 	}
 	while(bp != NULL)
 	{
-		fprintf(book_fp, "%s| %s| %s| %s| %s| %s| %s\n",\
+		fprintf(book_fp, "%s| %s| %s| %s| %s| %s\n",\
 				bp -> bookNum, bp -> bookName, bp -> bookPub, bp -> ISBN, bp -> bookWhere, bp -> canBorrow);
 		bp = bp -> next;
 	}

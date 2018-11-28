@@ -70,7 +70,7 @@ FILE *client_fp, *book_fp, *borrow_fp;
 int main()
 {
 	load_file();
-	sort_file();
+	Member_L -> head = sort_file(Member_L -> head);
 	save_file();
 }
 void insertNode_Book(B b1)
@@ -210,9 +210,4 @@ void save_file()
 	//fclose(client_fp);
 	//fclose(book_fp);
 	//fclose(borrow_fp);
-}
-void swap(*M_LinkedList, *M_LinkedList)
-void sort_file()
-{
-	
 }
