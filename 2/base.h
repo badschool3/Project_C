@@ -34,7 +34,7 @@ typedef struct book{		// 도서구조체
 	char bookNum[7];		// 도서번호 (정수 7자리)
 	char bookName[20];		// 도서이름
 	char bookPub[10];		// 출판사
-	char ISBN;				// ISBN (정수 13자리)
+	char ISBN[13];				// ISBN (정수 13자리)
 	char bookWhere[15];		// 소장처
 	char canBorrow[10];		// 대여가능 여부
 	struct book *next;

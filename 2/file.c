@@ -89,7 +89,7 @@ void load_file()
 		fgets(buf, sizeof(buf), client_fp);
 		sscanf(buf,"%[^\n|] | %[^\n|] | %[^\n|] | %[^\n|] | %[^\n|]",\
 				mm.stdNum, mm.passwd, mm.name, mm.address, mm.phoneNum);
-		insertNode_Client(mm);
+		insertNode_Member(mm);
 	}
 	while(!feof(book_fp))
 	{
@@ -129,7 +129,7 @@ void save_file()
 	while(bp != NULL)
 	{
 		fprintf(book_fp, "%s| %s| %s| %s| %s| %s| %s\n",\
-				bp -> bookNum, bp -> booName, bp -> bookPub, bp -> ISBN, bp -> bookWhere, bp -> canBorrow);
+				bp -> bookNum, bp -> bookName, bp -> bookPub, bp -> ISBN, bp -> bookWhere, bp -> canBorrow);
 		bp = bp -> next;
 	}
 	while(btp != NULL)
