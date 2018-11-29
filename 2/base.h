@@ -29,6 +29,7 @@ typedef struct member{		// 학생구조체
 	char address[20];		// 주소
 	char phoneNum[12];		// 전화번호
 	struct member *next;
+	struct member *prev;
 }M;
 typedef struct book{		// 도서구조체
 	char bookNum[7];		// 도서번호 (정수 7자리)
@@ -38,6 +39,7 @@ typedef struct book{		// 도서구조체
 	char bookWhere[15];		// 소장처
 	char canBorrow[10];		// 대여가능 여부
 	struct book *next;
+	struct book *prev;
 }B;
 typedef struct borrow{		// 대여구조체
 	char stdNum[7];			// 학생번호 (정수 7자리)
@@ -45,9 +47,10 @@ typedef struct borrow{		// 대여구조체
 	time_t borrowT;			// 대여시간
 	time_t returnT;			// 반납시간
 	struct borrow *next;
+	struct borrow *prev;
 }bT;
 
-typedef struct M_List{		// 링크드 리스트 구현
+typedef struct M_List{		// 이중 링크드 리스트 구현
 	M *head;
 	M *cur;
 	M *tail;

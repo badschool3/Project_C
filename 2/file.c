@@ -17,13 +17,14 @@ void insertNode_Book(B b1)
 	memcpy(newB -> ISBN, b1.ISBN, sizeof(b1.ISBN));
 	memcpy(newB -> bookWhere, b1.bookWhere, sizeof(b1.bookWhere));
 	memcpy(newB -> canBorrow, b1.canBorrow, sizeof(b1.canBorrow));
-	newB -> next = NULL;
+	newB -> next = newB -> prev = NULL;
 
 	if(Book_L -> head == NULL && Book_L -> tail == NULL)
 		Book_L -> head = Book_L -> tail = newB;
 	else
 	{
 		Book_L -> tail -> next = newB;
+		newB -> prev = Book_L -> tail;
 		Book_L -> tail = newB;
 	}
 }
@@ -36,13 +37,14 @@ void insertNode_Member(M m1)
 	memcpy(newM->name,m1.name,sizeof(m1.name));
 	memcpy(newM->address,m1.address,sizeof(m1.address));
 	memcpy(newM->phoneNum,m1.phoneNum,sizeof(m1.phoneNum));
-	newM -> next = NULL;
+	newM -> next = newM -> prev = NULL;
 
 	if(Member_L -> head == NULL && Member_L -> tail == NULL)
 		Member_L -> head = Member_L -> tail = newM;
 	else
 	{
 		Member_L -> tail -> next = newM;
+		newM -> prev = Member_L -> tail;
 		Member_L -> tail = newM;
 	}
 }
@@ -54,12 +56,14 @@ void insertNode_Borrow(bT bT1)
 	memcpy(newbT->bookNum, bT1.bookNum, sizeof(bT1.bookNum));
 	newbT -> borrowT = bT1.borrowT;
 	newbT -> returnT = bT1.returnT;
+	newbT -> next = newbT -> prev = NULL;
 
 	if(Borrow_L -> head == NULL && Borrow_L -> tail == NULL)
 		Borrow_L -> head = Borrow_L -> tail = newbT;
 	else
 	{
 		Borrow_L -> tail -> next = newbT;
+		newbT -> prev = Borrow_L -> tail;
 		Borrow_L -> tail = newbT;
 	}
 }
