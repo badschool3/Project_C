@@ -48,6 +48,7 @@ typedef struct B_List{
 	B *head;
 	B *cur;
 	B *tail;
+	int cnt;
 }B_LinkedList;
 
 typedef struct bT_List{
@@ -89,42 +90,48 @@ FILE *client_fp, *book_fp, *borrow_fp;
 
 void swap_Book(B* b1, B* b2)
 {
-	if(b1->prev != NULL)
+	printf("정렬 수행\n");
+	if(Book_L -> head == b1)
+	{
+		b2 -> prev = NULL;
+		Book_L -> head = b2;
+		printf("HEAD일때\n");
+	}
+	else
 	{
 		b1 -> prev -> next = b2;
 		b2 -> prev = b1 -> prev;
+
+	}
+		
+	if(Book_L->tail==b2)
+	{
+		b1 -> next = NULL;
+		Book_L -> tail = b1;
+		printf("TAIL일때\n");
 	}
 	else
-		b2 -> prev = NULL;
-
-		
-	if(b2->next != NULL)
 	{
 		b2 -> next -> prev = b1;
 		b1 -> next = b2 -> next;
 	}
-	else
-		b1 -> next = NULL;
-
 	b1 -> prev = b2;
 	b2 -> next = b1;
 }
 
 void sort_Book()
 {
-	B *bp1; 	
-	B *bp2;
-	bp1 = Book_L -> head;
-	while(bp1 != NULL)
+	B *bp; 	
+	for(int i = 0; i < Book_L -> cnt; i++)
 	{
-		bp2 = Book_L -> head;
-		while(bp2 != NULL &&bp2 -> next != NULL)
+		bp = Book_L -> head;
+		for(int j = 0; j < Book_L -> cnt - 1 - i; j++)
 		{
-			if(bp2 -> ISBN > bp2 -> next -> ISBN)
-				swap_Book(bp2, bp2->next);
-			bp2 = bp2 -> next;
+			if(bp -> ISBN > bp -> next -> ISBN)
+				swap_Book(bp, bp->next);
+			else
+				bp = bp -> next;
 		}
-		bp1 = bp1 -> next;
 	}
 }
 
@@ -139,7 +146,9 @@ void insertNode_Book(B b1)
 	memcpy(newB -> bookWhere, b1.bookWhere, sizeof(b1.bookWhere));
 	memcpy(newB -> canBorrow, b1.canBorrow, sizeof(b1.canBorrow));
 	newB -> next = newB -> prev = NULL;
-
+	Book_L -> cnt += 1;
+	if(Book_L -> cnt == 104)
+		printf("hi");
 	if(Book_L -> head == NULL && Book_L -> tail == NULL)
 	{
 		Book_L -> head = Book_L -> tail = newB;
@@ -170,6 +179,7 @@ void insertNode_Member(M m1)
 		Member_L -> tail -> next = newM;
 		newM -> prev = Member_L -> tail;
 		Member_L -> tail = newM;
+		Member_L -> tail -> next = NULL;
 	}
 }
 
@@ -209,6 +219,7 @@ void load_file()
 	Borrow_L = (bT_LinkedList *) malloc(sizeof(bT_LinkedList));
 
 	Book_L -> head = Book_L -> cur = Book_L -> tail = NULL;
+	Book_L -> cnt = 0;
 	Member_L -> head = Member_L -> cur = Member_L -> tail = NULL;
 	Borrow_L -> head = Borrow_L -> cur = Borrow_L -> tail = NULL;
 
