@@ -42,6 +42,7 @@ typedef struct M_List{		// 이중 링크드 리스트 구현
 	M *head;
 	M *cur;
 	M *tail;
+	int cnt;
 }M_LinkedList;
 
 typedef struct B_List{
@@ -84,18 +85,18 @@ void insertNode_Borrow(bT);		// Borrow 노드 추가
 void load_file(void);			// 파일에서 정보 메모리에 불러오기
 void save_file(void);			// 메모리 상에 정보를 파일에 저장하기
 void swap_Book(B*, B*);
+void swap_Member(M*, M*);
+void sort_Member(void);
 void sort_Book(void);
 
 FILE *client_fp, *book_fp, *borrow_fp;	
 
 void swap_Book(B* b1, B* b2)
 {
-	printf("정렬 수행\n");
 	if(Book_L -> head == b1)
 	{
 		b2 -> prev = NULL;
 		Book_L -> head = b2;
-		printf("HEAD일때\n");
 	}
 	else
 	{
@@ -108,7 +109,6 @@ void swap_Book(B* b1, B* b2)
 	{
 		b1 -> next = NULL;
 		Book_L -> tail = b1;
-		printf("TAIL일때\n");
 	}
 	else
 	{
@@ -119,6 +119,32 @@ void swap_Book(B* b1, B* b2)
 	b2 -> next = b1;
 }
 
+void swap_Member(M* m1, M* m2)
+{
+	if(Member_L -> head == m1)
+	{
+		m2 -> prev = NULL;
+		Member_L -> head = m2;
+	}
+	else
+	{
+		m1 -> prev -> next = m2;
+		m2 -> prev = m1 -> prev;
+	}
+		
+	if(Member_L->tail==m2)
+	{
+		m1 -> next = NULL;
+		Member_L -> tail = m1;
+	}
+	else
+	{
+		m2 -> next -> prev = m1;
+		m1 -> next = m2 -> next;
+	}
+	m1 -> prev = m2;
+	m2 -> next = m1;
+}
 void sort_Book()
 {
 	B *bp; 	
@@ -135,6 +161,22 @@ void sort_Book()
 	}
 }
 
+void sort_Member()
+{
+	M *mp;
+	for(int i = 0; i < Member_L -> cnt; i++)
+	{
+		mp = Member_L -> head;
+		for(int j = 0; j < Member_L -> cnt - 1 - i; j++)
+		{
+			if(mp -> stdNum > mp -> next -> stdNum)
+				swap_Member(mp, mp->next);
+			else
+				mp = mp -> next;
+		}
+	}
+}
+
 void insertNode_Book(B b1)
 {
 	B *newB = (B *)malloc(sizeof(B));
@@ -147,8 +189,6 @@ void insertNode_Book(B b1)
 	memcpy(newB -> canBorrow, b1.canBorrow, sizeof(b1.canBorrow));
 	newB -> next = newB -> prev = NULL;
 	Book_L -> cnt += 1;
-	if(Book_L -> cnt == 104)
-		printf("hi");
 	if(Book_L -> head == NULL && Book_L -> tail == NULL)
 	{
 		Book_L -> head = Book_L -> tail = newB;
@@ -171,7 +211,7 @@ void insertNode_Member(M m1)
 	memcpy(newM->address,m1.address,sizeof(m1.address));
 	memcpy(newM->phoneNum,m1.phoneNum,sizeof(m1.phoneNum));
 	newM -> next = newM -> prev = NULL;
-
+	Member_L -> cnt += 1;
 	if(Member_L -> head == NULL && Member_L -> tail == NULL)
 		Member_L -> head = Member_L -> tail = newM;
 	else
@@ -219,7 +259,7 @@ void load_file()
 	Borrow_L = (bT_LinkedList *) malloc(sizeof(bT_LinkedList));
 
 	Book_L -> head = Book_L -> cur = Book_L -> tail = NULL;
-	Book_L -> cnt = 0;
+	Book_L -> cnt = Member_L -> cnt = 0;
 	Member_L -> head = Member_L -> cur = Member_L -> tail = NULL;
 	Borrow_L -> head = Borrow_L -> cur = Borrow_L -> tail = NULL;
 
@@ -290,5 +330,6 @@ int main()
 {
 	load_file();
 	sort_Book();
+	sort_Member();
 	save_file();
 }
