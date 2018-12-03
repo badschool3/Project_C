@@ -23,27 +23,27 @@ void writeBorrow(void);		// 대여파일 쓰기
 
 /* --------구조체정의-------*/
 typedef struct member{		// 학생구조체
-	char stdNum[8];			// 학생번호 (정수 8자리)
-	char passwd[20];		// 비밀번호
-	char name[10];			// 이름
-	char address[20];		// 주소
+	int stdNum;				// 학생번호 (정수 8자리)
+	char passwd[30];		// 비밀번호
+	char name[30];			// 이름
+	char address[30];		// 주소
 	char phoneNum[12];		// 전화번호
 	struct member *next;
 	struct member *prev;
 }M;
 typedef struct book{		// 도서구조체
-	char bookNum[7];		// 도서번호 (정수 7자리)
-	char bookName[20];		// 도서이름
-	char bookPub[10];		// 출판사
-	char ISBN[13];				// ISBN (정수 13자리)
-	char bookWhere[15];		// 소장처
-	char canBorrow[10];		// 대여가능 여부
+	int bookNum;			// 도서번호 (정수 7자리)
+	char bookName[50];		// 도서이름
+	char bookPub[50];		// 출판사
+	unsigned long long ISBN;// ISBN (정수 13자리)
+	char bookWhere[50];		// 소장처
+	char canBorrow[3];		// 대여가능 여부
 	struct book *next;
 	struct book *prev;
 }B;
 typedef struct borrow{		// 대여구조체
-	char stdNum[7];			// 학생번호 (정수 7자리)
-	char bookNum[8];		// 도서번호	(정수 8자리)
+	int stdNum;				// 학생번호 (정수 7자리)
+	int bookNum;			// 도서번호	(정수 8자리)
 	time_t borrowT;			// 대여시간
 	time_t returnT;			// 반납시간
 	struct borrow *next;
@@ -54,18 +54,21 @@ typedef struct M_List{		// 이중 링크드 리스트 구현
 	M *head;
 	M *cur;
 	M *tail;
+	int cnt;
 }M_LinkedList;
 
 typedef struct B_List{
 	B *head;
 	B *cur;
 	B *tail;
+	int cnt;
 }B_LinkedList;
 
 typedef struct bT_List{
 	bT *head;
 	bT *cur;
 	bT *tail;
+	int cnt;
 }bT_LinkedList;
 
 /* --------변수 정의--------*/

@@ -48,7 +48,7 @@ void join_member()
 	printf("학번, 비밀번호, 이름, 주소, 전화번호를 입력하세요.\n\n");
 	
 	printf("학번 : ");
-	scanf("%d",MB.stdNum);
+	scanf("%d",&MB.stdNum);
 	printf("비밀번호 : ");
 	scanf("%s",MB.passwd);
 	printf("이름 : ");
@@ -80,16 +80,16 @@ int login_member()
 	printf("비밀번호 : ");
 	scanf("%s", passwd);
 	
+	if(!(strcmp(num,"admin")))					// 만약 admin이라면 관리자 메뉴를 위해 2 반환
+	{
+		printf("관리자 메뉴로 진입합니다.\n아무키나 누르시면 계속합니다.\n");
+		getch();
+		return 2;
+	}
 	while(mp != NULL)
 	{
-		if(!(strcmp(mp->stdNum, num) && !(strcmp(mp->passwd, password))))			// 학번, 비밀번호가 일치하는지 비교
-		{
-			if(!(strcmp(num,"admin")))					// 만약 admin이라면 관리자 메뉴를 위해 2 반환
-			{
-				printf("관리자 메뉴로 진입합니다.\n아무키나 누르시면 계속합니다.\n");
-				getch();
-				return 2;
-			}
+		if(atoi(num) == mp -> stdNum && !(strcmp(mp->passwd, password)))			// 학번, 비밀번호가 일치하는지 비교
+		{	
 			else
 			{
 				Member_L -> cur = mp;					// 일반 회원이라면 cur가 mp를 포인트 하고 1 반환
@@ -112,7 +112,7 @@ bool check_member(M m1)
 	M *mp = Member_L -> head;
 	while(mp != NULL)
 	{
-		if(!(strcmp(mp -> stdNum, m1.stdNum))
+		if(mp -> stdNum == m1.stdNum)
 			return false;
 		mp = mp -> next;
 	}

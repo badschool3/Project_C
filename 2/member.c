@@ -43,3 +43,52 @@ void member_menu()
 		}
 	}	
 }
+
+void change_info()
+{
+	int input;
+	while(1)
+	{
+		system("clear");
+		printf(">> 개인정보 수정 <<\n");
+		printf("1. 비밀번호 변경	2. 주소 변경\n");
+		printf("3. 전화번호 변경	4. 돌아가기\n");
+		printf("숫자를 입력해주세요 : ");
+	
+		scanf("%d", &input);
+	
+		switch(input)
+		{
+			case 1:
+				printf("변경할 비밀번호를 입력해주세요 : ");
+				scanf("%s", Member_L->cur->passwd);
+				printf("변경이 완료되었습니다.\n");
+				break;
+			case 2:
+				printf("변경할 주소를 입력해주세요 : ");
+				scanf("%s", Member_L->cur->address);
+				printf("변경이 완료되었습니다.\n");
+				break;
+			case 3:
+				printf("변경할 전화번호를 입력해주세요 : ");
+				scanf("%s", Member_L->cur->number);
+				printf("변경이 완료되었습니다.\n");
+				break;
+			case 4:
+				printf("메뉴로 돌아갑니다.\n");
+				printf("아무키나 누르시면 계속합니다.\n");
+				getch();
+				return;
+			default:
+				printf("잘못 입력하셨습니다.\n");
+				break;
+	}
+	printf("아무키나 누르시면 계속합니다.\n");
+	getch();
+	}
+}
+
+void out_member()
+{
+		
+}
