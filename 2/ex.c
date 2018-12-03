@@ -83,17 +83,49 @@ void insertNode_Borrow(bT);		// Borrow 노드 추가
 void load_file(void);			// 파일에서 정보 메모리에 불러오기
 void save_file(void);			// 메모리 상에 정보를 파일에 저장하기
 void swap_Book(B*, B*);
+void sort_Book(void);
 
 FILE *client_fp, *book_fp, *borrow_fp;	
 
 void swap_Book(B* b1, B* b2)
 {
-	b1 -> prev -> next = b2;
-	b2 -> prev = b1 -> prev;
-	b2 -> next -> prev = b1;
+	if(b1->prev != NULL)
+	{
+		b1 -> prev -> next = b2;
+		b2 -> prev = b1 -> prev;
+	}
+	else
+		b2 -> prev = NULL;
+
+		
+	if(b2->next != NULL)
+	{
+		b2 -> next -> prev = b1;
+		b1 -> next = b2 -> next;
+	}
+	else
+		b1 -> next = NULL;
+
 	b1 -> prev = b2;
-	b1 -> next = b2 -> next;
 	b2 -> next = b1;
+}
+
+void sort_Book()
+{
+	B *bp1; 	
+	B *bp2;
+	bp1 = Book_L -> head;
+	while(bp1 != NULL)
+	{
+		bp2 = Book_L -> head;
+		while(bp2 != NULL &&bp2 -> next != NULL)
+		{
+			if(bp2 -> ISBN > bp2 -> next -> ISBN)
+				swap_Book(bp2, bp2->next);
+			bp2 = bp2 -> next;
+		}
+		bp1 = bp1 -> next;
+	}
 }
 
 void insertNode_Book(B b1)
@@ -109,12 +141,15 @@ void insertNode_Book(B b1)
 	newB -> next = newB -> prev = NULL;
 
 	if(Book_L -> head == NULL && Book_L -> tail == NULL)
+	{
 		Book_L -> head = Book_L -> tail = newB;
+	}
 	else
 	{
 		Book_L -> tail -> next = newB;
 		newB -> prev = Book_L -> tail;
 		Book_L -> tail = newB;
+		Book_L -> tail -> next = NULL;
 	}
 }
 
@@ -243,5 +278,6 @@ void save_file()
 int main()
 {
 	load_file();
+	sort_Book();
 	save_file();
 }
