@@ -81,9 +81,20 @@ void insertNode_Book(B);		// Book 노드 추가
 void insertNode_Member(M);		// Member 노드 추가
 void insertNode_Borrow(bT);		// Borrow 노드 추가
 void load_file(void);			// 파일에서 정보 메모리에 불러오기
-void save_file(void);			// 메모리 상에 정보 파일에 저장하기
+void save_file(void);			// 메모리 상에 정보를 파일에 저장하기
+void swap_Book(B*, B*);
 
 FILE *client_fp, *book_fp, *borrow_fp;	
+
+void swap_Book(B* b1, B* b2)
+{
+	b1 -> prev -> next = b2;
+	b2 -> prev = b1 -> prev;
+	b2 -> next -> prev = b1;
+	b1 -> prev = b2;
+	b1 -> next = b2 -> next;
+	b2 -> next = b1;
+}
 
 void insertNode_Book(B b1)
 {
