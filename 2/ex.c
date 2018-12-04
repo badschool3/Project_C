@@ -84,13 +84,154 @@ void insertNode_Member(M);		// Member 노드 추가
 void insertNode_Borrow(bT);		// Borrow 노드 추가
 void load_file(void);			// 파일에서 정보 메모리에 불러오기
 void save_file(void);			// 메모리 상에 정보를 파일에 저장하기
-void swap_Book(B*, B*);
-void swap_Member(M*, M*);
-void sort_Member(void);
-void sort_Book(void);
+void swap_Book(B*, B*);			// swap_Book
+void swap_Member(M*, M*);		// swap_Member
+void sort_Member(void);			// Member 정렬
+void sort_Book(void);			// Book 정렬
+void print_book(B*);			// Book 출력
+
+void search_menu(void);		// 도서 검색 메뉴 함수
+void search_name(void);		// 도서명 검색 함수
+void search_pub(void);		// 출판사 검색 함수
+void search_ISBN(void);		// ISBN 검색 함수
+void search_writer(void);	// 저자명 검색 함수
+void search_all(void);		// 전체 검색 함수
 
 FILE *client_fp, *book_fp, *borrow_fp;	
 
+void print_book(B* bp)
+{
+	printf("==========================================\n");
+	printf("도서번호	:	%d,		도서명	:	%s\n",\
+			bp->bookName, bp->bookName);
+	printf("출판사		:	%s,저자명	: 	%s\n",\
+			bp->bookPub, bp->bookWriter);
+	printf("ISBN		:	%lld,	소장처	:	%s\n",\
+			bp->ISBN, bp->bookWhere);
+	printf("대여 가능 여부 : %s\n",\
+			bp->canBorrow);
+	return;
+}
+
+void search_menu()
+{
+	int input;
+	while(1)
+	{
+		system("clear");
+		printf(">> 도서 검색 <<\n");
+		printf("1. 도서명 검색	2. 출판사 검색\n");
+		printf("3. ISBN 검색	4. 저자명 검색\n");
+		printf("5. 전체 검색	6. 이전 메뉴\n\n");
+		printf("번호를 선택하세요 : ");
+		scanf("%d", &input);
+		getchar();
+		switch(input)
+		{
+			case 1:
+				search_name();
+				break;
+			case 2:
+				search_pub();
+				break;
+			case 3:
+				search_ISBN();
+				break;
+			case 4:
+				search_writer();
+				break;
+			case 5:
+				search_all();
+				break;
+			case 6:
+				printf("이전 메뉴로 돌아갑니다.\n");
+				printf("아무키나 누르시면 계속합니다.\n");
+				getch();
+				return;
+			default:
+				printf("잘못 입력하셨습니다.\n");
+		}
+		printf("==========================================\n");
+		printf("아무키나 누르시면 계속합니다.\n");
+		getch();
+	}
+}
+
+void search_name()
+{
+	char input[50] = {'\0',};
+	B *bp = Book_L -> head;
+	printf("도서명을 입력해 주세요 : ");
+	fgets(input,sizeof(input), stdin);
+	input[strlen(input)-1] = '\0';
+	system("clear");
+	while(bp != NULL)
+	{
+		if(strstr(bp->bookName, input) != NULL)
+			print_book(bp);
+		bp = bp -> next;
+	}
+	getch();
+	return;
+}
+void search_pub()
+{
+	char input[50] = {'\0',};
+	B *bp = Book_L -> head;
+	printf("출판사를 입력해 주세요 : ");
+	fgets(input, sizeof(input), stdin);
+	input[strlen(input)-1] = '\0';
+	system("clear");
+	while(bp != NULL)
+	{
+		if(strstr(bp->bookPub, input) != NULL)
+			print_book(bp);
+		bp = bp -> next;
+	}
+	return;
+}
+void search_ISBN()
+{
+	unsigned long long input;
+	B *bp = Book_L -> head;
+	printf("ISBN을 입력해 주세요 : ");
+	scanf("%lld", &input);
+	getchar();
+	system("clear");
+	while(bp != NULL)
+	{
+		if(bp->ISBN == input)
+			print_book(bp);
+		bp = bp -> next;
+	}
+	return;
+}
+void search_writer()
+{
+	char input[50] = {'\0', };
+	B *bp = Book_L -> head;
+	printf("저자명을 입력해 주세요 : ");
+	fgets(input, sizeof(input), stdin);
+	input[strlen(input)-1] = '\0';
+	system("clear");
+	while(bp != NULL)
+	{
+		if(strstr(bp -> bookWriter, input) != NULL)
+			print_book(bp);
+		bp = bp -> next;
+	}
+	return;
+}
+void search_all()
+{
+	B *bp = Book_L -> head;
+	while(bp != NULL)
+	{
+		print_book(bp);
+		bp = bp -> next;
+	}
+	return;
+}
 void swap_Book(B* b1, B* b2)
 {
 	if(Book_L -> head == b1)
@@ -153,6 +294,8 @@ void sort_Book()
 		bp = Book_L -> head;
 		for(int j = 0; j < Book_L -> cnt - 1 - i; j++)
 		{
+			if(j==Book_L->cnt-2-i && i == Book_L->cnt-2)
+				printf("g");
 			if(bp -> ISBN > bp -> next -> ISBN)
 				swap_Book(bp, bp->next);
 			else
@@ -275,7 +418,7 @@ void load_file()
 	{
 		fgets(buf, sizeof(buf), book_fp);
 		sscanf(buf,"%[^\n|] | %[^\n|] | %[^\n|] | %[^\n|] | %lld | %[^\n|] | %[^\n|]",\
-				tmp, bb.bookName, bb.bookWriter, bb.bookPub, &bb.ISBN, bb.bookWhere, bb.canBorrow);
+				tmp, bb.bookName, bb.bookPub, bb.bookWriter, &bb.ISBN, bb.bookWhere, bb.canBorrow);
 		bb.bookNum = atoi(tmp);
 		insertNode_Book(bb);
 	}
@@ -312,7 +455,7 @@ void save_file()
 	while(bp != NULL)
 	{
 		fprintf(book_fp, "%08d | %s| %s| %s| %lld | %s| %s\n",\
-				bp -> bookNum, bp -> bookName, bp -> bookWriter, bp -> bookPub, bp -> ISBN, bp -> bookWhere, bp -> canBorrow);
+				bp -> bookNum, bp -> bookName, bp -> bookPub, bp -> bookWriter, bp -> ISBN, bp -> bookWhere, bp -> canBorrow);
 		bp = bp -> next;
 	}
 	while(btp != NULL)
@@ -331,5 +474,6 @@ int main()
 	load_file();
 	sort_Book();
 	sort_Member();
-	save_file();
+	search_menu();
+	//save_file();
 }
