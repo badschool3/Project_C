@@ -294,8 +294,6 @@ void sort_Book()
 		bp = Book_L -> head;
 		for(int j = 0; j < Book_L -> cnt - 1 - i; j++)
 		{
-			if(j==Book_L->cnt-2-i && i == Book_L->cnt-2)
-				printf("g");
 			if(bp -> ISBN > bp -> next -> ISBN)
 				swap_Book(bp, bp->next);
 			else
