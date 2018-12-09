@@ -50,6 +50,7 @@ typedef struct B_List{
 	B *cur;
 	B *tail;
 	int cnt;
+	int topNum;
 }B_LinkedList;
 
 typedef struct bT_List{
@@ -119,6 +120,40 @@ bool check_member(M);
 void change_info(void);
 void search_menu(void);
 void out_member(void);
+
+void add_book(void);			// 도서 등록
+void remove_book(void);			// 도서 삭제
+void borrow_book(void);			// 도서 대여
+void return_book(void);			// 도서 반납
+void member_list(void);			// 회원 목록
+
+void add_book()
+{
+	char input;
+	B newB;
+	printf("도서명 : ");
+	scanf("%s", newB.bookName);
+	printf("출판사 : ");
+	scanf("%s", newB.bookPub);
+	printf("저자명 : ");
+	scanf("%s", newB.bookWriter);
+	printf("ISBN : ");
+	scanf("%lld", &newB.ISBN);
+	printf("소장처 : ");
+	scanf("%s", newB.bookWhere);
+
+	printf("\n\n자동 입력 사항\n\n");
+	printf("대여가능 여부  : Y");
+	newB.canBorrow = 'Y';
+	Book_L->topNum++;
+	printf("도서번호 : %d", Book_L->topNum);
+	newB.bookNum = Book_L->topNum;
+	printf("등록하시겠습니까 ?");
+	scanf("%c", input);
+	if(input != 'Y')
+		printf("등록을 취소합니다.\n");
+	return;
+}
 
 void first_menu()
 {
@@ -554,6 +589,8 @@ void insertNode_Book(B b1)
 {
 	B *newB = (B *)malloc(sizeof(B));
 	newB->bookNum = b1.bookNum;
+	if(newB->bookNum > Book_L->topNum)
+		Book_L->topNum = newB->bookNum;
 
 	memcpy(newB->bookName,b1.bookName, sizeof(b1.bookName));
 	memcpy(newB->bookWriter, b1.bookWriter, sizeof(b1.bookWriter));
@@ -633,7 +670,7 @@ void load_file()
 	Borrow_L = (bT_LinkedList *) malloc(sizeof(bT_LinkedList));
 
 	Book_L -> head = Book_L -> cur = Book_L -> tail = NULL;
-	Book_L -> cnt = Member_L -> cnt = 0;
+	Book_L -> cnt = Book_L -> topNum = Member_L -> cnt = 0 ;
 	Member_L -> head = Member_L -> cur = Member_L -> tail = NULL;
 	Borrow_L -> head = Borrow_L -> cur = Borrow_L -> tail = NULL;
 
