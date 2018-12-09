@@ -107,10 +107,132 @@ void search_writer(void);	// 저자명 검색 함수
 void search_all(void);		// 전체 검색 함수
 
 void member_menu(void);
-
 unsigned long long chk_ISBN(B*, ISBN_List*);
 bool insertNode_ISBN(unsigned long long, ISBN_List*);
 void delete_ISBN(ISBN_List*);
+
+void first_menu(void);
+void join_member(void);
+int login_member(void);
+bool check_member(M);
+
+void change_info(void);
+void search_menu(void);
+void out_member(void);
+
+void first_menu()
+{
+	int input, check;
+
+	while(1)
+	{
+		system("clear");
+		input = check = 0;
+		printf(">> 도서관 서비스 <<\n");
+		printf("1. 회원가입		2. 로그인		3. 프로그램 종료\n");
+		printf("번호를 입력해주세요 : ");
+		scanf("%d",&input);
+		getchar();
+		switch(input)
+		{
+			case 1:
+				join_member();
+				break;
+			case 2:
+				check = login_member();
+				if(check == 2)
+					//admin_menu();]
+					printf("어드민메뉴\n");
+				else if(check == 1)
+					member_menu();
+				break;
+
+			case 3:
+				printf("프로그램을 종료합니다.\n");
+				printf("아무키나 누르시면 계속합니다.\n");
+				getch();
+				return;
+			default:
+				printf("다시 입력해주세요.\n");
+		}
+		printf("아무키나 누르시면 계속합니다.\n");
+		getch();
+	}
+}
+
+void join_member()
+{
+	M MB;
+	printf(">> 회원 가입 <<\n");
+	printf("학번, 비밀번호, 이름, 주소, 전화번호를 입력하세요.\n\n");
+	
+	printf("학번 : ");
+	scanf("%d",&MB.stdNum);
+	printf("비밀번호 : ");
+	scanf("%s",MB.passwd);
+	printf("이름 : ");
+	scanf("%s",MB.name);
+	printf("주소 : ");
+	scanf("%s",MB.address);
+	printf("전화번호 : ");
+	scanf("%s",MB.phoneNum);
+	
+	if(check_member(MB))
+	{
+		insertNode_Member(MB);
+		sort_Member();
+		printf("\n회원가입이 완료되셨습니다.\n");
+	}
+	else
+		printf("\n중복된 정보를 가진 회원이 존재합니다.\n");
+	return;
+}
+int login_member()
+{
+	char num[9] = {'\0',};
+	char password[20] = {'\0',};
+	M *mp = Member_L -> head;
+	system("clear");
+	printf("학번 : ");
+	fgets(num,sizeof(num), stdin);
+	getchar();
+	printf("비밀번호 : ");
+	fgets(password,sizeof(password), stdin);
+	
+	password[strlen(password)-1] = '\0';
+	
+	if(!(strcmp(num,"admin")))					// 만약 admin이라면 관리자 메뉴를 위해 2 반환
+	{
+		printf("관리자 메뉴로 진입합니다.\n아무키나 누르시면 계속합니다.\n");
+		getch();
+		return 2;
+	}
+	while(mp != NULL)
+	{
+		if(atoi(num) == mp -> stdNum && !(strcmp(mp->passwd, password)))			// 학번, 비밀번호가 일치하는지 비교
+		{	
+			Member_L -> cur = mp;					// 일반 회원이라면 cur가 mp를 포인트 하고 1 반환
+			printf("%s님 환영합니다. 회원 메뉴로 진입합니다.\n아무키나 누르시면 계속합니다.\n",mp->name);
+			getch();
+			return 1;
+		}
+		mp = mp -> next;
+	}
+	printf("로그인 정보가 틀립니다.\n");
+	return false;										// 로그인 실패 시 0 반환
+}
+bool check_member(M m1)
+{
+	M *mp = Member_L -> head;
+	while(mp != NULL)
+	{
+		if(mp -> stdNum == m1.stdNum)
+			return false;
+		mp = mp -> next;
+	}
+	return true;
+}
+
 FILE *client_fp, *book_fp, *borrow_fp;	
 
 void print_book(B *cur)
@@ -533,15 +655,16 @@ void load_file()
 		bb.bookNum = atoi(tmp);
 		insertNode_Book(bb);
 	}
-	/*
+	
 	while(!feof(borrow_fp))
 	{
-		fgets(buf, sizeof(buf), book_fp);
+		if(fgets(buf, sizeof(buf), book_fp) == NULL)
+			break;
 		sscanf(buf, "%[^\n|] | %[^\n|] | %d | %d\n",\
 				bt.stdNum, bt.bookNum, &bt.borrowT, &bt.returnT);
 		insertNode_Borrow(bt);
 	}
-	*/
+	
 	fclose(client_fp);
 	fclose(book_fp);
 	fclose(borrow_fp);
@@ -585,7 +708,9 @@ void member_menu()
 	int input;
 	while(1)
 	{
+		system("clear");
 		printf(">> 회원 메뉴 <<\n");
+		printf(">> %s님 환영합니다 <<\n",Member_L->cur->name);
 		printf("1. 도서 검색		2. 내 대여 목록\n");
 		printf("3. 개인정보 수정	4. 회원 탈퇴\n");
 		printf("5. 로그아웃			6. 프로그램 종료\n"); 
@@ -602,25 +727,114 @@ void member_menu()
 				//myborrow_list();
 				break;
 			case 3:
-				//change_info();
+				change_info();
 				break;
 			case 4:
-				//out_member();
+				out_member();
 				printf("회원 탈퇴가 완료되었습니다.\n");
+				return;
 			case 5:
-				//now_logout();
-				printf("아무키나 누르시면 계속합니다.\n");
-				getch();
-
+				Member_L->cur = NULL;
+				printf("로그아웃이 완료되었습니다.\n");
+				return;
+			case 6:
+				printf("프로그램을 종료합니다.\n");
+				sort_Member();
+				sort_Book();
+				//sort_Borrow();
+				exit(0);
+				
 		}
+		printf("아무키나 누르시면 계속합니다.\n");
+		getch();
 	}	
 }
 
+void change_info()
+{
+	int input;
+	while(1)
+	{
+		system("clear");
+		printf(">> 개인정보 수정 <<\n");
+		printf("1. 비밀번호 변경	2. 주소 변경\n");
+		printf("3. 전화번호 변경	4. 돌아가기\n");
+		printf("숫자를 입력해주세요 : ");
+	
+		scanf("%d", &input);
+	
+		switch(input)
+		{
+			case 1:
+				printf("변경할 비밀번호를 입력해주세요 : ");
+				scanf("%s", Member_L->cur->passwd);
+				printf("변경이 완료되었습니다.\n");
+				break;
+			case 2:
+				printf("변경할 주소를 입력해주세요 : ");
+				scanf("%s", Member_L->cur->address);
+				printf("변경이 완료되었습니다.\n");
+				break;
+			case 3:
+				printf("변경할 전화번호를 입력해주세요 : ");
+				scanf("%s", Member_L->cur->phoneNum);
+				printf("변경이 완료되었습니다.\n");
+				break;
+			case 4:
+				printf("메뉴로 돌아갑니다.\n");
+				printf("아무키나 누르시면 계속합니다.\n");
+				getch();
+				return;
+			default:
+				printf("잘못 입력하셨습니다.\n");
+				break;
+	}
+	save_file();
+	printf("아무키나 누르시면 계속합니다.\n");
+	getch();
+	}
+}
+/*
+void myborrow_list(void)
+{
+	bT *bt = Borrow_L->head;
+	B *bp = Book_L -> head;
+	while(bt != NULL)
+	{
+		if(Member_L->cur->stdNum == bt->stdNum)
+		{
+			while(bp != NULL)
+			{
+				if(bt->bookNum == bp->bookNum)
+				{
+					printf("도서번호 : %d\n",bp->bookNum);
+					printf("도서명 : %s\n",bp->bookName);
+					printf("대여일자 : %d년 %d월 %d일 %c요일\n",);
+					printf("반납일자 : %d년 %d월 %d일 %c요일\n",);
+				}
+				bp = bp -> next;
+			}
+		}
+		bt = bt->next;
+	}
+}
+*/
+void out_member(void)
+{
+	if(Member_L->cur->next != NULL)
+		Member_L->cur->next->prev = Member_L->cur->prev;
+	if(Member_L->cur->prev != NULL)
+		Member_L->cur->prev->next = Member_L->cur->next;
+	
+	free(Member_L->cur);
+	Member_L->cur = NULL;
+	return;
+}
 int main()
 {
 	load_file();
-	//sort_Book();
-	//sort_Member();
-	search_menu();
-	//save_file();
+	sort_Book();
+	sort_Member();
+	first_menu();
+	save_file();
 }
