@@ -58,6 +58,15 @@ typedef struct bT_List{
 	bT *tail;
 }bT_LinkedList;
 
+typedef struct ISBN_check{
+	unsigned long long ISBN;
+	struct ISBN_check *next;
+}ISBN_check;
+typedef struct ISBN_List{
+	ISBN_check *head;
+	ISBN_check *tail;
+}ISBN_List;
+
 /* --------변수 정의--------*/
 B_LinkedList *Book_L;
 M_LinkedList *Member_L;
@@ -88,7 +97,7 @@ void swap_Book(B*, B*);			// swap_Book
 void swap_Member(M*, M*);		// swap_Member
 void sort_Member(void);			// Member 정렬
 void sort_Book(void);			// Book 정렬
-void print_book(B*,int,int);			// Book 출력
+void print_book(B*);			// Book 출력
 
 void search_menu(void);		// 도서 검색 메뉴 함수
 void search_name(void);		// 도서명 검색 함수
@@ -99,17 +108,34 @@ void search_all(void);		// 전체 검색 함수
 
 void member_menu(void);
 
+unsigned long long chk_ISBN(B*, ISBN_List*);
+bool insertNode_ISBN(unsigned long long, ISBN_List*);
+void delete_ISBN(ISBN_List*);
 FILE *client_fp, *book_fp, *borrow_fp;	
 
-void print_book(B* bp, int Y, int N)
+void print_book(B *cur)
 {
+	B *bp = Book_L -> head;
+	int Y, N;
+	Y = N = 0;
+	while(bp != NULL)
+	{
+		if(bp->ISBN == cur->ISBN)
+		{
+			if(!strcmp(bp->canBorrow, "Y"))
+				Y++;
+			else
+				N++;
+		}
+		bp = bp->next;
+	}
 	printf("====================\n");
-	printf("도서명 : %s\n", bp->bookName);
-	printf("출판사 : %s\n", bp->bookPub);
-	printf("저자명 : %s\n", bp->bookWriter);
-	printf("ISBN : %lld\n", bp->ISBN);
-	printf("소장처 : %s\n", bp->bookWhere);
-	printf("대여가능 여부 : %s (%d/%d)\n", bp->canBorrow, Y, Y+N);
+	printf("도서명 : %s\n", cur->bookName);
+	printf("출판사 : %s\n", cur->bookPub);
+	printf("저자명 : %s\n", cur->bookWriter);
+	printf("ISBN : %lld\n", cur->ISBN);
+	printf("소장처 : %s\n", cur->bookWhere);
+	printf("대여가능 여부 : %s (%d/%d)\n", (Y>0) ? "Y" : "N", Y, Y+N);
 	return;
 }
 
@@ -157,15 +183,57 @@ void search_menu()
 		getch();
 	}
 }
+void delete_ISBN(ISBN_List *list)
+{
+	ISBN_check *cur;
+	ISBN_check *next;
+	cur = list->head;
+	while(cur!=NULL)
+	{
+		next = cur->next;
+		free(cur);
+		cur = next;
+	}
+	return;
+}
+unsigned long long chk_ISBN(B *bp, ISBN_List *list)
+{
+	ISBN_check *new;
+	new = list->head;
+	while(new != NULL)
+	{
+		if(new->ISBN == bp->ISBN)
+			return false;
+		new = new->next;
+	}
+
+	return bp->ISBN;
+}
+bool insertNode_ISBN(unsigned long long ISBN, ISBN_List *list)
+{
+	if (ISBN == false)	// return값이 false라면 추가하지 않고 종료
+		return false;
+
+	ISBN_check *new = (ISBN_check *)malloc(sizeof(ISBN_check));
+	new->ISBN = ISBN;
+	new->next = NULL;
+	if(list->head == NULL && list->tail == NULL)
+		list->head = list->tail = new;
+	else
+	{
+		list->tail->next = new;
+		list->tail = new;
+	}
+	return true;
+}
 
 void search_name()
 {
 	char input[50] = {'\0',};
-	int Y, N;
-	Y = N = 0;
-
+	ISBN_List *chk;
+	chk = (ISBN_List *) malloc(sizeof(ISBN_List));
+	chk->head = chk->tail = NULL;
 	B *bp = Book_L -> head;
-	B *S;
 	printf("도서명을 입력해 주세요 : ");
 	fgets(input,sizeof(input), stdin);
 	input[strlen(input)-1] = '\0';
@@ -173,21 +241,23 @@ void search_name()
 	while(bp != NULL)
 	{
 		if(!strcmp(bp->bookName, input))
-			{
-				S = bp;
-				if(!strcmp(bp->canBorrow, "Y"))
-					Y++;
-				else
-					N++;
-			}
+		{
+			if(insertNode_ISBN(chk_ISBN(bp,chk),chk))
+				print_book(bp);
+		}
 		bp = bp -> next;
 	}
-	print_book(S,Y,N);
+	delete_ISBN(chk);
+	free(chk);
 	return;
 }
+
 void search_pub()
 {
 	char input[50] = {'\0',};
+	ISBN_List *chk;
+	chk = (ISBN_List *) malloc(sizeof(ISBN_List));
+	chk->head = chk->tail = NULL;
 	B *bp = Book_L -> head;
 	printf("출판사를 입력해 주세요 : ");
 	fgets(input, sizeof(input), stdin);
@@ -195,31 +265,49 @@ void search_pub()
 	system("clear");
 	while(bp != NULL)
 	{
-		if(strstr(bp->bookPub, input) != NULL)
-			print_book(bp,0,0);
+		if(!strcmp(bp->bookPub, input))
+		{
+			if(insertNode_ISBN(chk_ISBN(bp,chk),chk))
+				print_book(bp);
+		}
 		bp = bp -> next;
 	}
+	delete_ISBN(chk);
+	free(chk);
 	return;
 }
 void search_ISBN()
 {
-	unsigned long long input;
+	char input[30];
+	unsigned long long num;
+	ISBN_List *chk;
+	chk = (ISBN_List *) malloc(sizeof(ISBN_List));
+	chk->head = chk->tail = NULL;
 	B *bp = Book_L -> head;
 	printf("ISBN을 입력해 주세요 : ");
-	scanf("%[0-9]", &input);
-	getchar();
+	fgets(input, sizeof(input), stdin);
+	input[strlen(input)-1] = '\0';
+	num = atoll(input);
 	system("clear");
 	while(bp != NULL)
 	{
-		if(bp->ISBN == input)
-			print_book(bp,0,0);
+		if(num == bp->ISBN)
+		{
+			if(insertNode_ISBN(chk_ISBN(bp,chk),chk))
+				print_book(bp);
+		}
 		bp = bp -> next;
 	}
+	delete_ISBN(chk);
+	free(chk);
 	return;
 }
 void search_writer()
 {
 	char input[50] = {'\0', };
+	ISBN_List *chk;
+	chk = (ISBN_List *) malloc(sizeof(ISBN_List));
+	chk->head = chk->tail = NULL;
 	B *bp = Book_L -> head;
 	printf("저자명을 입력해 주세요 : ");
 	fgets(input, sizeof(input), stdin);
@@ -227,10 +315,15 @@ void search_writer()
 	system("clear");
 	while(bp != NULL)
 	{
-		if(strstr(bp -> bookWriter, input) != NULL)
-			print_book(bp,0,0);
+		if(!strcmp(bp->bookWriter, input))
+		{
+			if(insertNode_ISBN(chk_ISBN(bp,chk),chk))
+				print_book(bp);
+		}
 		bp = bp -> next;
 	}
+	delete_ISBN(chk);
+	free(chk);
 	return;
 }
 void search_all()
@@ -238,7 +331,13 @@ void search_all()
 	B *bp = Book_L -> head;
 	while(bp != NULL)
 	{
-		print_book(bp,0,0);
+		printf("====================\n");
+		printf("도서명 : %s\n", bp->bookName);
+		printf("출판사 : %s\n", bp->bookPub);
+		printf("저자명 : %s\n", bp->bookWriter);
+		printf("ISBN : %lld\n", bp->ISBN);
+		printf("소장처 : %s\n", bp->bookWhere);
+		printf("대여가능 여부 : %s\n",bp->canBorrow);
 		bp = bp -> next;
 	}
 	return;
@@ -418,7 +517,8 @@ void load_file()
 
 	while(!feof(client_fp))
 	{
-		fgets(buf, sizeof(buf), client_fp);
+		if(fgets(buf, sizeof(buf), client_fp) == NULL)
+			break;
 		sscanf(buf,"%[^\n|]|%[^\n|]|%[^\n|]|%[^\n|]|%[^\n|]",\
 				tmp, mm.passwd, mm.name, mm.address, mm.phoneNum);
 		mm.stdNum = atoi(tmp);
@@ -426,7 +526,8 @@ void load_file()
 	}
 	while(!feof(book_fp))
 	{
-		fgets(buf, sizeof(buf), book_fp);
+		if(fgets(buf, sizeof(buf), book_fp) == NULL)
+			break;
 		sscanf(buf,"%[^\n|]|%[^\n|]|%[^\n|]|%[^\n|]|%lld|%[^\n|]|%[^\n|]",\
 				tmp, bb.bookName, bb.bookPub, bb.bookWriter, &bb.ISBN, bb.bookWhere, bb.canBorrow);
 		bb.bookNum = atoi(tmp);
