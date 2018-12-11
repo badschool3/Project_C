@@ -201,6 +201,7 @@ void borrow_book()
 		default:
 			printf("잘못 입력하셨습니다.\n");
 	}
+	save_file();
 	printf("아무키나 누르시면 계속합니다.\n");
 	getch();
 	return;
@@ -215,17 +216,16 @@ void borrow_name()
 	chk -> head = chk -> tail = NULL;
 	B *bp = Book_L -> head;
 	printf("도서명을 입력하세요 : ");
+	getchar();
 	fgets(input, sizeof(input), stdin);
 	input[strlen(input)-1] = '\0';
 	system("clear");
 	printf(">> 검색 결과 <<\n");
-	while(bp != NULL);
+	while(bp != NULL)
 	{
 		if(!strcmp(bp->bookName, input))
-		{
 			if(insertNode_ISBN(chk_ISBN(bp, chk), chk))
 				available = book_borrow(bp);		// 검색 결과가 하나라도 있다면 true로 변경
-		}
 		bp = bp -> next;
 	}
 	delete_ISBN(chk);
@@ -237,10 +237,41 @@ void borrow_name()
 		printf("검색 결과가 없습니다.\n");
 	return;
 }
+
+void borrow_ISBN()
+{
+	long long int input;
+	bool available = false;
+	ISBN_List *chk;
+	chk = (ISBN_List *) malloc(sizeof(ISBN_List));
+	chk -> head = chk -> tail = NULL;
+	B *bp = Book_L -> head;
+
+	printf("ISBN을 입력하세요 : ");
+	scanf("%lld", &input);
+	system("clear");
+	printf(">> 검색 결과 <<\n");
+	while(bp != NULL)
+	{
+		if(bp->ISBN == input)
+			if(insertNode_ISBN(chk_ISBN(bp, chk), chk))
+				available = book_borrow(bp);
+		bp = bp -> next;
+	}
+	delete_ISBN(chk);
+	free(chk);
+
+	if(available)
+		borrow_ask();
+	else
+		printf("검색 결과가 없습니다.\n");
+	return;
+}
+
 bool book_borrow(B *bp)
 {
 	printf("================\n");
-	printf("도서 번호 : %s ( 대여 가능 여부 : %s)\n", bp->bookNum, bp -> canBorrow);
+	printf("도서 번호 : %07d ( 대여 가능 여부 : %s)\n", bp->bookNum, bp -> canBorrow);
 	printf("도서명 : %s\n", bp -> bookName);
 	printf("출판사 : %s\n", bp -> bookPub);
 	printf("저자명 : %s\n", bp -> bookWriter);
@@ -255,6 +286,7 @@ void borrow_ask()
 	int stdNum, bookNum;
 	char YN;
 	time_t now_time;
+	struct tm *t;
 	bool std = false, bok = false;		// 학번, 도서 가능 여부 확인
 	B *bp = Book_L -> head;
 	M *mp = Member_L -> head;
@@ -262,7 +294,7 @@ void borrow_ask()
 	scanf("%d", &stdNum);
 	printf("도서번호를 입력하세요 : ");
 	scanf("%d", &bookNum);
-
+	getchar();
 	while(mp != NULL)
 	{
 		if(mp -> stdNum == stdNum)			// 학번이 존재하는지 체크
@@ -291,8 +323,8 @@ void borrow_ask()
 		printf("도서 정보가 잘못되었습니다.\n");
 		return;
 	}
-
 	printf("이 도서를 대여합니까 ? (Y/N) : ");
+	
 	scanf("%c",&YN);
 	if(YN == 'Y')
 	{
@@ -300,9 +332,15 @@ void borrow_ask()
 		bt.stdNum = stdNum;
 		bt.bookNum = bookNum;
 		bt.borrowT = now_time;
-		bt.returnT = now_time+2592000;
+		now_time+=2592000;
+		t = localtime(&now_time);
+		if(t->tm_wday == 0)				// 만약 반납일이 일요일(=0) 일때 체크
+			now_time+=86400;			// 하루 추가
+		bt.returnT = now_time;
 		insertNode_Borrow(bt);
+		memcpy(bp->canBorrow,"N",2);
 		printf("대여가 완료되었습니다.\n");
+		getchar();
 	}
 	else
 		printf("대여를 취소합니다.\n");
@@ -827,7 +865,6 @@ void insertNode_Borrow(bT bt)
 	
 	newbT -> stdNum = bt.stdNum;
 	newbT -> bookNum = bt.bookNum;
-
 	newbT -> borrowT = bt.borrowT;
 	newbT -> returnT = bt.returnT;
 	newbT -> next = newbT -> prev = NULL;
@@ -856,6 +893,7 @@ void load_file()
 	
 	char buf[300] = {'\0',};
 	char tmp[15] = {'\0',};
+	char tmp2[15] = {'\0',};
 	Book_L = (B_LinkedList *) malloc(sizeof(B_LinkedList));				// 동적 할당
 	Member_L = (M_LinkedList *) malloc(sizeof(M_LinkedList));
 	Borrow_L = (bT_LinkedList *) malloc(sizeof(bT_LinkedList));
@@ -886,10 +924,12 @@ void load_file()
 	
 	while(!feof(borrow_fp))
 	{
-		if(fgets(buf, sizeof(buf), book_fp) == NULL)
+		if(fgets(buf, sizeof(buf), borrow_fp) == NULL)
 			break;
 		sscanf(buf, "%[^\n|]|%[^\n|]|%ld|%ld\n",\
-				bt.stdNum, bt.bookNum, &bt.borrowT, &bt.returnT);
+				tmp, tmp2, &bt.borrowT, &bt.returnT);
+		bt.stdNum = atoi(tmp);
+		bt.bookNum = atoi(tmp2);
 		insertNode_Borrow(bt);
 	}
 	
@@ -910,19 +950,19 @@ void save_file()
 	
 	while(mp != NULL)
 	{
-		fprintf(client_fp, "%d|%s|%s|%s|%s\n",\
+		fprintf(client_fp, "%08d|%s|%s|%s|%s\n",\
 				mp -> stdNum, mp -> passwd, mp -> name, mp-> address, mp -> phoneNum);
 		mp = mp -> next;
 	}
 	while(bp != NULL)
 	{
-		fprintf(book_fp, "%08d|%s|%s|%s|%013lld|%s|%s\n",\
+		fprintf(book_fp, "%07d|%s|%s|%s|%013lld|%s|%s\n",\
 				bp -> bookNum, bp -> bookName, bp -> bookPub, bp -> bookWriter, bp -> ISBN, bp -> bookWhere, bp -> canBorrow);
 		bp = bp -> next;
 	}
 	while(btp != NULL)
 	{
-		fprintf(borrow_fp, "%s|%s|%ld|%ld\n",\
+		fprintf(borrow_fp, "%08d|%07d|%ld|%ld\n",\
 				btp -> stdNum, btp -> bookNum, btp -> borrowT, btp -> returnT);
 		btp = btp -> next;
 	}
@@ -1069,6 +1109,6 @@ int main()
 	load_file();
 	//sort_Book();
 	//sort_Member();
-	//first_menu();
+	first_menu();
 	save_file();
 }
