@@ -136,6 +136,9 @@ bool admin_borrow(B*);			// 도서 가능 여부 확인
 bool admin_name(void);			// 관리자 이름 검색 기능
 bool admin_ISBN(void);			// 관리자 ISBN 검색 기능
 
+void remove_borrow(bT*);
+char* day_of_the_week(int);		// 요일 변환 기능
+
 void admin_menu()
 {
 	int input;
@@ -163,17 +166,16 @@ void admin_menu()
 				borrow_book();
 				break;
 			case 4:
-				//return_book();
+				return_book();
 				break;
 			case 5:
-				//search_book();
+				search_all();
 				break;
 			case 6:
-				//member_list();
+				member_list();
 				break;
 			case 7:
-				//now_logout();
-				break;
+				return;
 			default:
 				printf("다시 입력해주세요.\n\n");
 			
@@ -183,6 +185,16 @@ void admin_menu()
 		printf("아무키나 입력하시면 계속합니다.\n");
 		getch();
 	}
+}
+
+void member_list()
+{
+	int input;
+	printf(">> 회원 목록 <<\n");
+	printf("1. 이름 검색 	2. 학번 검색\n");
+	printf("3. 전체 검색		4. 이전 메뉴\n");
+
+	
 }
 
 void remove_book()
@@ -243,6 +255,114 @@ void borrow_book()
 	printf("아무키나 누르시면 계속합니다.\n");
 	getch();
 	return;
+}
+
+char* day_of_the_week(int day)
+{
+	switch(day)
+	{
+		case 0:
+			return "일";
+		case 1:
+			return "월";
+		case 2:
+			return "화";
+		case 3:
+			return "수";
+		case 4:
+			return "목";
+		case 5:
+			return "금";
+		case 6:
+			return "토";
+	}
+}
+
+void return_book()
+{
+	bT *btp = Borrow_L->head;
+	B *bp = Book_L -> head;
+	int input;
+	char YN;
+	struct tm *t;
+	system("clear");
+	printf(">> 회원의 대여 목록 <<\n");
+	while(btp != NULL)
+	{
+		printf("================\n");
+		printf("도서번호 : %07d\n", btp->bookNum);
+		while(bp != NULL)
+		{
+			if(bp->bookNum == btp->bookNum)
+			{
+				printf("도서명 : %s\n",bp->bookName);
+				break;
+			}
+			bp = bp -> next;
+		}
+		t = localtime(&btp->borrowT);
+		printf("대여 일자 : %d년 %d월 %d일 %s요일\n",t->tm_year+1900, t->tm_mon+1, t->tm_mday, day_of_the_week(t->tm_wday));
+		t = localtime(&btp->returnT);
+		printf("반납 일자 : %d년 %d월 %d일 %s요일\n",t->tm_year+1900, t->tm_mon+1, t->tm_mday, day_of_the_week(t->tm_wday));
+		btp = btp -> next;
+	}
+	printf("\n반납할 도서번호를 입력하세요 : ");
+	scanf("%d",&input);
+	getchar();
+	btp = Borrow_L -> head;
+	while(btp != NULL)
+	{
+		if(btp->bookNum == input)
+		{
+			printf("도서 반납처리를 할까요? (Y/N) : ");
+			scanf("%c", &YN);
+			getchar();
+			if(YN == 'Y')
+			{
+				remove_borrow(btp);
+				return;
+			}
+			else
+			{
+				printf("도서 반납을 취소합니다.\n");
+				return;
+			}
+		}
+		btp = btp -> next;
+	}
+	printf("도서 정보가 잘못되었습니다.\n");
+	return;
+}
+
+void remove_borrow(bT *btp)
+{
+	B *bp = Book_L -> head;
+	while(bp != NULL)
+	{
+		if(bp->bookNum == btp -> bookNum)
+		{
+			memcpy(bp->canBorrow, "Y", 2);
+			break;
+		}
+		bp = bp -> next;
+	}
+
+	if(btp->next == NULL)
+	{
+		Borrow_L->tail = btp->prev;
+		btp ->prev->next = NULL;
+	}
+	else
+		btp->next->prev = btp->prev;
+
+	if(btp->prev == NULL)
+	{
+		Borrow_L->head = btp->next;
+		btp->next->prev = NULL;
+	}
+	else
+		btp->prev->next = btp->next;
+
 }
 
 bool admin_name()
@@ -357,7 +477,7 @@ void remove_ask()
 
 void borrow_ask()
 {
-	bT bt;
+	bT btp;
 	int stdNum, bookNum;
 	char YN;
 	time_t now_time;
@@ -404,15 +524,15 @@ void borrow_ask()
 	if(YN == 'Y')
 	{
 		time(&now_time);
-		bt.stdNum = stdNum;
-		bt.bookNum = bookNum;
-		bt.borrowT = now_time;
+		btp.stdNum = stdNum;
+		btp.bookNum = bookNum;
+		btp.borrowT = now_time;
 		now_time+=2592000;
 		t = localtime(&now_time);
 		if(t->tm_wday == 0)				// 만약 반납일이 일요일(=0) 일때 체크
 			now_time+=86400;			// 하루 추가
-		bt.returnT = now_time;
-		insertNode_Borrow(bt);
+		btp.returnT = now_time;
+		insertNode_Borrow(btp);
 		memcpy(bp->canBorrow,"N",2);
 		printf("대여가 완료되었습니다.\n");
 		getchar();
@@ -934,14 +1054,14 @@ void insertNode_Member(M m1)
 	return;
 }
 
-void insertNode_Borrow(bT bt)
+void insertNode_Borrow(bT btp)
 {
 	bT *newbT = (bT *)malloc(sizeof(bT));
 	
-	newbT -> stdNum = bt.stdNum;
-	newbT -> bookNum = bt.bookNum;
-	newbT -> borrowT = bt.borrowT;
-	newbT -> returnT = bt.returnT;
+	newbT -> stdNum = btp.stdNum;
+	newbT -> bookNum = btp.bookNum;
+	newbT -> borrowT = btp.borrowT;
+	newbT -> returnT = btp.returnT;
 	newbT -> next = newbT -> prev = NULL;
 
 	if(Borrow_L -> head == NULL && Borrow_L -> tail == NULL)
