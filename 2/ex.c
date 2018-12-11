@@ -21,7 +21,7 @@ typedef struct member{		// 학생구조체
 typedef struct book{		// 도서구조체
 	int bookNum;			// 도서번호 (정수 7자리)
 	char bookName[50];		// 도서이름
-	char bookWriter[50];	// 저자명
+	char bookWriter[50];	// 저자명1
 	char bookPub[50];		// 출판사
 	unsigned long long ISBN;// ISBN (정수 13자리)
 	char bookWhere[50];		// 소장처
@@ -128,6 +128,12 @@ void borrow_book(void);			// 도서 대여
 void return_book(void);			// 도서 반납
 void member_list(void);			// 회원 목록
 
+void borrow_ask(void);			// 대여 여부 질문
+bool book_borrow(B*);			// 도서 가능 여부 확인
+void borrow_name(void);			// 대여 이름 검색 기능
+void borrow_ISBN(void);			// 대여 ISBN 검색 기능
+void borrow_book(void);			// 도서 대여 기능
+
 void admin_menu()
 {
 	int input;
@@ -138,7 +144,7 @@ void admin_menu()
 		printf("1. 도서 등록		2. 도서 삭제\n");
 		printf("3. 도서 대여		4. 도서 반납\n");
 		printf("5. 도서 검색		6. 회원 목록\n");
-		printf("7. 로그아웃			8. 프로그램 종료\n");
+		printf("7. 로그아웃		  8. 프로그램 종료\n");
 		printf("숫자를 입력해주세요 : ");
 
 		scanf("%d",&input);
@@ -152,7 +158,7 @@ void admin_menu()
 				//remove_book();
 				break;
 			case 3:
-				//borrow_book();
+				borrow_book();
 				break;
 			case 4:
 				//return_book();
@@ -176,6 +182,132 @@ void admin_menu()
 	}
 }
 
+void borrow_book()
+{
+	int input;
+	system("clear");
+	printf(">> 도서 대여 <<\n");
+	printf("1. 도서명 검색 	 2. ISBN 검색\n\n");
+	printf("검색 번호를 입력하세요 : ");
+	scanf("%d",&input);
+	switch(input)
+	{
+		case 1:
+			borrow_name();
+			break;
+		case 2:
+			borrow_ISBN();
+			break;
+		default:
+			printf("잘못 입력하셨습니다.\n");
+	}
+	printf("아무키나 누르시면 계속합니다.\n");
+	getch();
+	return;
+}
+
+void borrow_name()
+{
+	char input[50] = {'\0',};
+	bool available = false;							// 검색 결과가 있는지 없는지 판단
+	ISBN_List *chk;
+	chk = (ISBN_List *) malloc(sizeof(ISBN_List));
+	chk -> head = chk -> tail = NULL;
+	B *bp = Book_L -> head;
+	printf("도서명을 입력하세요 : ");
+	fgets(input, sizeof(input), stdin);
+	input[strlen(input)-1] = '\0';
+	system("clear");
+	printf(">> 검색 결과 <<\n");
+	while(bp != NULL);
+	{
+		if(!strcmp(bp->bookName, input))
+		{
+			if(insertNode_ISBN(chk_ISBN(bp, chk), chk))
+				available = book_borrow(bp);		// 검색 결과가 하나라도 있다면 true로 변경
+		}
+		bp = bp -> next;
+	}
+	delete_ISBN(chk);
+	free(chk);
+
+	if(available)					// 검색 결과가 있을 때만 대여 질문 출력
+		borrow_ask();
+	else
+		printf("검색 결과가 없습니다.\n");
+	return;
+}
+bool book_borrow(B *bp)
+{
+	printf("================\n");
+	printf("도서 번호 : %s ( 대여 가능 여부 : %s)\n", bp->bookNum, bp -> canBorrow);
+	printf("도서명 : %s\n", bp -> bookName);
+	printf("출판사 : %s\n", bp -> bookPub);
+	printf("저자명 : %s\n", bp -> bookWriter);
+	printf("ISBN : %lld\n", bp -> ISBN);
+	printf("소장처 : %s\n", bp -> bookWhere);
+	return true;
+}
+
+void borrow_ask()
+{
+	bT bt;
+	int stdNum, bookNum;
+	char YN;
+	time_t now_time;
+	bool std = false, bok = false;		// 학번, 도서 가능 여부 확인
+	B *bp = Book_L -> head;
+	M *mp = Member_L -> head;
+	printf("학번을 입력하세요 : ");
+	scanf("%d", &stdNum);
+	printf("도서번호를 입력하세요 : ");
+	scanf("%d", &bookNum);
+
+	while(mp != NULL)
+	{
+		if(mp -> stdNum == stdNum)			// 학번이 존재하는지 체크
+		{
+			std = true;
+			break;
+		}
+		mp = mp -> next;
+	}
+	if(!std)
+	{
+		printf("학번 정보가 잘못되었습니다.\n");
+		return;
+	}
+	while(bp != NULL)
+	{
+		if((bp -> bookNum == bookNum) && !strcmp(bp -> canBorrow, "Y")) 	// 도서가 존재하고 대여 가능한지 체크
+		{
+			bok = true;
+			break;
+		}
+		bp = bp -> next;
+	}
+	if(!bok)
+	{
+		printf("도서 정보가 잘못되었습니다.\n");
+		return;
+	}
+
+	printf("이 도서를 대여합니까 ? (Y/N) : ");
+	scanf("%c",&YN);
+	if(YN == 'Y')
+	{
+		time(&now_time);
+		bt.stdNum = stdNum;
+		bt.bookNum = bookNum;
+		bt.borrowT = now_time;
+		bt.returnT = now_time+2592000;
+		insertNode_Borrow(bt);
+		printf("대여가 완료되었습니다.\n");
+	}
+	else
+		printf("대여를 취소합니다.\n");
+	return;
+}
 
 void add_book()
 {
@@ -686,15 +818,18 @@ void insertNode_Member(M m1)
 		Member_L -> tail = newM;
 		Member_L -> tail -> next = NULL;
 	}
+	return;
 }
 
-void insertNode_Borrow(bT bT1)
+void insertNode_Borrow(bT bt)
 {
 	bT *newbT = (bT *)malloc(sizeof(bT));
-	newbT -> stdNum = bT1.stdNum;
-	newbT -> bookNum = bT1.bookNum;
-	newbT -> borrowT = bT1.borrowT;
-	newbT -> returnT = bT1.returnT;
+	
+	newbT -> stdNum = bt.stdNum;
+	newbT -> bookNum = bt.bookNum;
+
+	newbT -> borrowT = bt.borrowT;
+	newbT -> returnT = bt.returnT;
 	newbT -> next = newbT -> prev = NULL;
 
 	if(Borrow_L -> head == NULL && Borrow_L -> tail == NULL)
@@ -704,7 +839,9 @@ void insertNode_Borrow(bT bT1)
 		Borrow_L -> tail -> next = newbT;
 		newbT -> prev = Borrow_L -> tail;
 		Borrow_L -> tail = newbT;
+		Borrow_L -> tail -> next = NULL;
 	}
+	return;
 }
 
 void load_file()
