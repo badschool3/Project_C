@@ -128,11 +128,13 @@ void borrow_book(void);			// 도서 대여
 void return_book(void);			// 도서 반납
 void member_list(void);			// 회원 목록
 
+void remove_ask(void);
 void borrow_ask(void);			// 대여 여부 질문
-bool book_borrow(B*);			// 도서 가능 여부 확인
-void borrow_name(void);			// 대여 이름 검색 기능
-void borrow_ISBN(void);			// 대여 ISBN 검색 기능
-void borrow_book(void);			// 도서 대여 기능
+
+bool admin_borrow(B*);			// 도서 가능 여부 확인
+
+bool admin_name(void);			// 관리자 이름 검색 기능
+bool admin_ISBN(void);			// 관리자 ISBN 검색 기능
 
 void admin_menu()
 {
@@ -155,7 +157,7 @@ void admin_menu()
 				add_book();
 				break;
 			case 2:
-				//remove_book();
+				remove_book();
 				break;
 			case 3:
 				borrow_book();
@@ -174,12 +176,42 @@ void admin_menu()
 				break;
 			default:
 				printf("다시 입력해주세요.\n\n");
-			sort_Book();
-			save_file();
-			printf("아무키나 입력하시면 계속합니다.\n");
-			getch();
+			
 		}
+		sort_Book();
+		save_file();
+		printf("아무키나 입력하시면 계속합니다.\n");
+		getch();
 	}
+}
+
+void remove_book()
+{
+	int input;
+	system("clear");
+	printf(">> 도서 제거 <<\n");
+	printf("1. 도서명 검색	2. ISBN 검색\n\n");
+	printf("검색 번호를 입력하세요 : ");
+	scanf("%d", &input);
+
+	switch(input)
+	{
+		case 1:
+			if(admin_name())
+				remove_ask();
+			else
+				printf("검색 결과가 없습니다.\n");
+			break;
+		case 2:
+			if(admin_ISBN())
+				remove_ask();
+			else
+				printf("검색 결과가 없습니다.\n");
+			break;
+		default:
+		printf("잘못 입력하셨습니다.\n");
+	}
+	return;
 }
 
 void borrow_book()
@@ -193,10 +225,16 @@ void borrow_book()
 	switch(input)
 	{
 		case 1:
-			borrow_name();
+			if(admin_name())
+				borrow_ask();
+			else
+				printf("검색 결과가 없습니다.\n");
 			break;
 		case 2:
-			borrow_ISBN();
+			if(admin_ISBN())
+				borrow_ask();
+			else
+				printf("검색 결과가 없습니다.\n");
 			break;
 		default:
 			printf("잘못 입력하셨습니다.\n");
@@ -207,7 +245,7 @@ void borrow_book()
 	return;
 }
 
-void borrow_name()
+bool admin_name()
 {
 	char input[50] = {'\0',};
 	bool available = false;							// 검색 결과가 있는지 없는지 판단
@@ -225,20 +263,15 @@ void borrow_name()
 	{
 		if(!strcmp(bp->bookName, input))
 			if(insertNode_ISBN(chk_ISBN(bp, chk), chk))
-				available = book_borrow(bp);		// 검색 결과가 하나라도 있다면 true로 변경
+				available = admin_borrow(bp);		// 검색 결과가 하나라도 있다면 true로 변경
 		bp = bp -> next;
 	}
 	delete_ISBN(chk);
 	free(chk);
-
-	if(available)					// 검색 결과가 있을 때만 대여 질문 출력
-		borrow_ask();
-	else
-		printf("검색 결과가 없습니다.\n");
-	return;
+	return available;
 }
 
-void borrow_ISBN()
+bool admin_ISBN()
 {
 	long long int input;
 	bool available = false;
@@ -255,29 +288,71 @@ void borrow_ISBN()
 	{
 		if(bp->ISBN == input)
 			if(insertNode_ISBN(chk_ISBN(bp, chk), chk))
-				available = book_borrow(bp);
+				available = admin_borrow(bp);
 		bp = bp -> next;
 	}
 	delete_ISBN(chk);
 	free(chk);
-
-	if(available)
-		borrow_ask();
-	else
-		printf("검색 결과가 없습니다.\n");
-	return;
+	return available;
 }
 
-bool book_borrow(B *bp)
+bool admin_borrow(B *bp)
 {
 	printf("================\n");
-	printf("도서 번호 : %07d ( 대여 가능 여부 : %s)\n", bp->bookNum, bp -> canBorrow);
+	printf("도서 번호 : %07d (가능 여부 : %s)\n", bp->bookNum, bp -> canBorrow);
 	printf("도서명 : %s\n", bp -> bookName);
 	printf("출판사 : %s\n", bp -> bookPub);
 	printf("저자명 : %s\n", bp -> bookWriter);
 	printf("ISBN : %lld\n", bp -> ISBN);
 	printf("소장처 : %s\n", bp -> bookWhere);
 	return true;
+}
+
+void remove_ask()
+{
+	B *bp = Book_L -> head;
+	int bookNum;
+	bool bok = false;
+	printf("삭제할 도서의 번호를 입력하세요 : ");
+	scanf("%d", &bookNum);
+	getchar();
+
+	while(bp != NULL)
+	{
+		if((bp -> bookNum == bookNum) && !strcmp(bp -> canBorrow, "Y")) 	// 도서가 존재하고 대여 가능한지 체크
+		{
+			bok = true;
+			break;
+		}
+		bp = bp -> next;
+	}
+
+	if(!bok)
+	{
+		printf("도서 정보가 잘못되었습니다.\n");
+		return;
+	}
+
+	if(bp->next == NULL)
+	{
+		Book_L->tail = bp->prev;
+		bp->prev->next = NULL;
+	}
+	else
+		bp->next->prev = bp->prev;
+
+	if(bp->prev == NULL)
+	{
+		Book_L->head = bp->next;
+		bp->next->prev = NULL;
+	}
+	else
+		bp->prev->next = bp->next;
+
+	free(bp);
+	Book_L->cnt--;
+	printf("삭제되었습니다.\n");
+	return;
 }
 
 void borrow_ask()
@@ -1090,17 +1165,24 @@ void myborrow_list(void)
 void out_member(void)
 {
 	if(Member_L->cur->next == NULL)				// tail일때
+	{
 		Member_L->tail = Member_L->cur->prev;
+		Member_L->tail->next = NULL;
+	}
 	else
 		Member_L->cur->next->prev = Member_L->cur->prev;
 
 	if(Member_L->cur->prev == NULL)				// head 일때
+	{
 		Member_L->head = Member_L->cur->next;
+		Member_L->head->prev = NULL;
+	}
 	else
 		Member_L->cur->prev->next = Member_L->cur->next;
 	
 	free(Member_L->cur);
 	Member_L->cur = NULL;
+	Member_L->cnt--;
 	return;
 }
 
