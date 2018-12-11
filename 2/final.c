@@ -20,7 +20,7 @@ typedef struct member{		// 학생구조체
 typedef struct book{		// 도서구조체
 	int bookNum;			// 도서번호 (정수 7자리)
 	char bookName[50];		// 도서이름
-	char bookWriter[50];	// 저자명1
+	char bookWriter[50];	// 저자명
 	char bookPub[50];		// 출판사
 	unsigned long long ISBN;// ISBN (정수 13자리)
 	char bookWhere[50];		// 소장처
@@ -38,10 +38,10 @@ typedef struct borrow{		// 대여구조체
 }bT;
 
 typedef struct M_List{		// 이중 링크드 리스트 구현
-	M *head;
-	M *cur;
-	M *tail;
-	int cnt;
+	M *head;				// 처음
+	M *cur;					// 커서
+	M *tail;				// 끝
+	int cnt;				// 개수
 }M_LinkedList;
 
 typedef struct B_List{
@@ -164,7 +164,7 @@ int main()
 
 void load_file()
 {
-	client_fp = fopen("client","r");
+	client_fp = fopen("client","r");		// 파일 불러올 준비
 	book_fp = fopen("book","r");
 	borrow_fp = fopen("borrow","r");
 	
@@ -184,14 +184,15 @@ void load_file()
 	Borrow_L -> head = Borrow_L -> cur = Borrow_L -> tail = NULL;
 
 	Book_L -> cnt = Book_L -> topNum = Member_L -> cnt = 0 ;			// 데이터 수 카운트
-	while(!feof(client_fp))
+
+	while(!feof(client_fp))		// 파일의 끝까지 반복
 	{
-		if(fgets(buf, sizeof(buf), client_fp) == NULL)
+		if(fgets(buf, sizeof(buf), client_fp) == NULL)		// feof 고질적 문제인 마지막 한번더 반복 예외 처리
 			break;
 		sscanf(buf,"%[^\n|]|%[^\n|]|%[^\n|]|%[^\n|]|%[^\n|]",\
 				tmp, mm.passwd, mm.name, mm.address, mm.phoneNum);
-		mm.stdNum = atoi(tmp);
-		insertNode_Member(mm);
+		mm.stdNum = atoi(tmp);								// tmp에 받은 것을 atoi함수로 int형으로 변환
+		insertNode_Member(mm);								// 노드를 리스트에 추가
 	}
 	while(!feof(book_fp))
 	{
@@ -221,7 +222,7 @@ void load_file()
 
 void save_file()
 {
-	client_fp = fopen("client", "w");
+	client_fp = fopen("client", "w");						// load_file과 동일한 구조
 	book_fp = fopen("book", "w");
 	borrow_fp = fopen("borrow", "w");
 
@@ -254,35 +255,35 @@ void save_file()
 
 void insertNode_Book(B b1)
 {
-	B *newB = (B *)malloc(sizeof(B));
+	B *newB = (B *)malloc(sizeof(B));							// 노드 동적 할당
 	newB->bookNum = b1.bookNum;
 	if(newB->bookNum > Book_L->topNum)
 		Book_L->topNum = newB->bookNum;
 
-	memcpy(newB->bookName,b1.bookName, sizeof(b1.bookName));
+	memcpy(newB->bookName,b1.bookName, sizeof(b1.bookName));	// 인자 값 노드에 넣기
 	memcpy(newB->bookWriter, b1.bookWriter, sizeof(b1.bookWriter));
 	memcpy(newB -> bookPub, b1.bookPub, sizeof(b1.bookPub));
 	newB->ISBN = b1.ISBN;
 	memcpy(newB -> bookWhere, b1.bookWhere, sizeof(b1.bookWhere));
 	memcpy(newB -> canBorrow, b1.canBorrow, sizeof(b1.canBorrow));
 	newB -> next = newB -> prev = NULL;
-	Book_L -> cnt += 1;
-	if(Book_L -> head == NULL && Book_L -> tail == NULL)
-	{
+	Book_L -> cnt += 1;											// 노드 개수 카운트
+
+	if(Book_L -> head == NULL && Book_L -> tail == NULL)		// 만약 처음 노드였다면 head, tail 추가
 		Book_L -> head = Book_L -> tail = newB;
-	}
 	else
 	{
-		Book_L -> tail -> next = newB;
-		newB -> prev = Book_L -> tail;
-		Book_L -> tail = newB;
-		Book_L -> tail -> next = NULL;
+		Book_L -> tail -> next = newB;							// 아니라면 기존 tail노드의 next가 새로운 노드를 가르킴
+		newB -> prev = Book_L -> tail;							// 새로운 노드의 prev가 기존 tail노드를 가르킴
+		Book_L -> tail = newB;									// tail이 새로운 노드가 됨
+		Book_L -> tail -> next = NULL;							// tail 노드의 next를 비워줌
 	}
+	return;
 }
 
 void insertNode_Member(M m1)
 {
-	M *newM = (M *)malloc(sizeof(M));
+	M *newM = (M *)malloc(sizeof(M));							// Book과 동일한 구조
 	newM->stdNum = m1.stdNum;
 	memcpy(newM->passwd,m1.passwd,sizeof(m1.passwd));
 	memcpy(newM->name,m1.name,sizeof(m1.name));
@@ -324,9 +325,9 @@ void insertNode_Borrow(bT btp)
 	return;
 }
 
-void swap_Book(B* b1, B* b2)
+void swap_Book(B* b1, B* b2)					// sort를 위한 swap함수, b1과 b2의 위치를 바꿔줌
 {
-	if(Book_L -> head == b1)
+	if(Book_L -> head == b1)					// 만약 b1이 head일 때
 	{
 		b2 -> prev = NULL;
 		Book_L -> head = b2;
@@ -338,7 +339,7 @@ void swap_Book(B* b1, B* b2)
 
 	}
 		
-	if(Book_L->tail==b2)
+	if(Book_L->tail==b2)						// 만약 b2가 tail일 때
 	{
 		b1 -> next = NULL;
 		Book_L -> tail = b1;
@@ -350,6 +351,7 @@ void swap_Book(B* b1, B* b2)
 	}
 	b1 -> prev = b2;
 	b2 -> next = b1;
+	return;
 }
 
 void swap_Member(M* m1, M* m2)
@@ -377,8 +379,9 @@ void swap_Member(M* m1, M* m2)
 	}
 	m1 -> prev = m2;
 	m2 -> next = m1;
+	return;
 }
-void sort_Book()
+void sort_Book()								// 버블 정렬 알고리즘 사용
 {
 	B *bp; 	
 	for(int i = 0; i < Book_L -> cnt; i++)
@@ -386,12 +389,13 @@ void sort_Book()
 		bp = Book_L -> head;
 		for(int j = 0; j < Book_L -> cnt - 1 - i; j++)
 		{
-			if(bp -> ISBN > bp -> next -> ISBN)
+			if(bp -> ISBN > bp -> next -> ISBN)	// 더 크다면 앞뒤 노드swap
 				swap_Book(bp, bp->next);
 			else
 				bp = bp -> next;
 		}
 	}
+	return;
 }
 
 void sort_Member()
@@ -408,6 +412,7 @@ void sort_Member()
 				mp = mp -> next;
 		}
 	}
+	return;
 }
 
 void first_menu()
@@ -470,7 +475,7 @@ void join_member()
 	printf("전화번호 : ");
 	scanf("%s",MB.phoneNum);
 	
-	if(check_member(MB))
+	if(check_member(MB))		// 중복된 회원이 있는지 체크
 	{
 		insertNode_Member(MB);
 		sort_Member();
@@ -516,12 +521,13 @@ int login_member()
 	printf("로그인 정보가 틀립니다.\n");
 	return false;									// 로그인 실패 시 0 반환
 }
+
 bool check_member(M m1)
 {
 	M *mp = Member_L -> head;
 	while(mp != NULL)
 	{
-		if(mp -> stdNum == m1.stdNum)
+		if(mp -> stdNum == m1.stdNum)				// 중복된 회원이 존재할 시 false 반환
 			return false;
 		mp = mp -> next;
 	}
@@ -679,7 +685,7 @@ void myborrow_list(void)
 				{
 					printf("도서번호 : %07d\n",bp->bookNum);
 					printf("도서명 : %s\n",bp->bookName);
-					t = localtime(&btp->borrowT);
+					t = localtime(&btp->borrowT);				// 요일 쉽게 알기 위해 구조체 사용
 					printf("대여 일자 : %d년 %d월 %d일 %s요일\n",t->tm_year+1900, t->tm_mon+1, t->tm_mday, day_of_the_week(t->tm_wday));
 					t = localtime(&btp->returnT);
 					printf("반납 일자 : %d년 %d월 %d일 %s요일\n",t->tm_year+1900, t->tm_mon+1, t->tm_mday, day_of_the_week(t->tm_wday));
@@ -713,7 +719,7 @@ void out_member(void)
 	
 	free(Member_L->cur);
 	Member_L->cur = NULL;
-	Member_L->cnt--;
+	Member_L->cnt--;							// 카운트 하나 감소
 	sort_Member();
 	save_file();
 	return;
