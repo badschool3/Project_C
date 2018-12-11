@@ -121,11 +121,61 @@ void change_info(void);
 void search_menu(void);
 void out_member(void);
 
+void admin_menu(void);
 void add_book(void);			// 도서 등록
 void remove_book(void);			// 도서 삭제
 void borrow_book(void);			// 도서 대여
 void return_book(void);			// 도서 반납
 void member_list(void);			// 회원 목록
+
+void admin_menu()
+{
+	int input;
+	while(1)
+	{
+		system("clear");
+		printf(">> 관리자 메뉴 <<\n");
+		printf("1. 도서 등록		2. 도서 삭제\n");
+		printf("3. 도서 대여		4. 도서 반납\n");
+		printf("5. 도서 검색		6. 회원 목록\n");
+		printf("7. 로그아웃			8. 프로그램 종료\n");
+		printf("숫자를 입력해주세요 : ");
+
+		scanf("%d",&input);
+		
+		switch(input)
+		{
+			case 1:
+				add_book();
+				break;
+			case 2:
+				//remove_book();
+				break;
+			case 3:
+				//borrow_book();
+				break;
+			case 4:
+				//return_book();
+				break;
+			case 5:
+				//search_book();
+				break;
+			case 6:
+				//member_list();
+				break;
+			case 7:
+				//now_logout();
+				break;
+			default:
+				printf("다시 입력해주세요.\n\n");
+			sort_Book();
+			save_file();
+			printf("아무키나 입력하시면 계속합니다.\n");
+			getch();
+		}
+	}
+}
+
 
 void add_book()
 {
@@ -141,17 +191,22 @@ void add_book()
 	scanf("%lld", &newB.ISBN);
 	printf("소장처 : ");
 	scanf("%s", newB.bookWhere);
-
-	printf("\n\n자동 입력 사항\n\n");
+	getchar();
+	printf("\n\n자동 입력 사항\n");
 	printf("대여가능 여부  : Y");
-	newB.canBorrow = 'Y';
-	Book_L->topNum++;
-	printf("도서번호 : %d", Book_L->topNum);
+	memcpy(newB.canBorrow,"Y",2);
+	Book_L->topNum+=1;
+	printf("도서번호 : %d\n", Book_L->topNum);
 	newB.bookNum = Book_L->topNum;
-	printf("등록하시겠습니까 ?");
-	scanf("%c", input);
+	printf("등록하시겠습니까 ? (Y/N) : ");
+	scanf("%c", &input);
 	if(input != 'Y')
+	{
 		printf("등록을 취소합니다.\n");
+		return;
+	}
+	insertNode_Book(newB);
+	printf("등록이 완료되었습니다.\n");
 	return;
 }
 
@@ -176,8 +231,7 @@ void first_menu()
 			case 2:
 				check = login_member();
 				if(check == 2)
-					//admin_menu();]
-					printf("어드민메뉴\n");
+					admin_menu();
 				else if(check == 1)
 					member_menu();
 				break;
@@ -233,7 +287,7 @@ int login_member()
 	getchar();
 	printf("비밀번호 : ");
 	fgets(password,sizeof(password), stdin);
-	
+	num[strlen(num)-1] = '\0';
 	password[strlen(password)-1] = '\0';
 	
 	if(!(strcmp(num,"admin")))					// 만약 admin이라면 관리자 메뉴를 위해 2 반환
@@ -665,15 +719,15 @@ void load_file()
 	
 	char buf[300] = {'\0',};
 	char tmp[15] = {'\0',};
-	Book_L = (B_LinkedList *) malloc(sizeof(B_LinkedList));
+	Book_L = (B_LinkedList *) malloc(sizeof(B_LinkedList));				// 동적 할당
 	Member_L = (M_LinkedList *) malloc(sizeof(M_LinkedList));
 	Borrow_L = (bT_LinkedList *) malloc(sizeof(bT_LinkedList));
 
-	Book_L -> head = Book_L -> cur = Book_L -> tail = NULL;
-	Book_L -> cnt = Book_L -> topNum = Member_L -> cnt = 0 ;
+	Book_L -> head = Book_L -> cur = Book_L -> tail = NULL;				// 초기화
 	Member_L -> head = Member_L -> cur = Member_L -> tail = NULL;
 	Borrow_L -> head = Borrow_L -> cur = Borrow_L -> tail = NULL;
 
+	Book_L -> cnt = Book_L -> topNum = Member_L -> cnt = 0 ;			// 데이터 수 카운트
 	while(!feof(client_fp))
 	{
 		if(fgets(buf, sizeof(buf), client_fp) == NULL)
@@ -697,7 +751,7 @@ void load_file()
 	{
 		if(fgets(buf, sizeof(buf), book_fp) == NULL)
 			break;
-		sscanf(buf, "%[^\n|] | %[^\n|] | %d | %d\n",\
+		sscanf(buf, "%[^\n|]|%[^\n|]|%ld|%ld\n",\
 				bt.stdNum, bt.bookNum, &bt.borrowT, &bt.returnT);
 		insertNode_Borrow(bt);
 	}
@@ -725,13 +779,13 @@ void save_file()
 	}
 	while(bp != NULL)
 	{
-		fprintf(book_fp, "%08d|%s|%s|%s|%lld|%s|%s\n",\
+		fprintf(book_fp, "%08d|%s|%s|%s|%013lld|%s|%s\n",\
 				bp -> bookNum, bp -> bookName, bp -> bookPub, bp -> bookWriter, bp -> ISBN, bp -> bookWhere, bp -> canBorrow);
 		bp = bp -> next;
 	}
 	while(btp != NULL)
 	{
-		fprintf(borrow_fp, "%s|%s|%d|%d\n",\
+		fprintf(borrow_fp, "%s|%s|%ld|%ld\n",\
 				btp -> stdNum, btp -> bookNum, btp -> borrowT, btp -> returnT);
 		btp = btp -> next;
 	}
@@ -858,20 +912,26 @@ void myborrow_list(void)
 */
 void out_member(void)
 {
-	if(Member_L->cur->next != NULL)
+	if(Member_L->cur->next == NULL)				// tail일때
+		Member_L->tail = Member_L->cur->prev;
+	else
 		Member_L->cur->next->prev = Member_L->cur->prev;
-	if(Member_L->cur->prev != NULL)
+
+	if(Member_L->cur->prev == NULL)				// head 일때
+		Member_L->head = Member_L->cur->next;
+	else
 		Member_L->cur->prev->next = Member_L->cur->next;
 	
 	free(Member_L->cur);
 	Member_L->cur = NULL;
 	return;
 }
+
 int main()
 {
 	load_file();
-	sort_Book();
-	sort_Member();
-	first_menu();
+	//sort_Book();
+	//sort_Member();
+	//first_menu();
 	save_file();
 }
